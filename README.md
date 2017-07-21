@@ -1,0 +1,2 @@
+# python-object-as-daemon
+Tiny utility to launch an object in a separate process, possibly using another python executable/environment. The object may be accessed from the main process through a proxy with similar behaviour. This project relies on the default multiprocessing module, therefore the child environment does not require any particular package to be present (not even this package). It makes it quite convenient to launch tasks/tests on specific environments.
