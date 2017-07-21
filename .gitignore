@@ -99,3 +99,11 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Pycharm
+.idea/
+
+# Mkdocs
+site/
+
+tmp_venv/

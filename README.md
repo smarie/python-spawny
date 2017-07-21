@@ -1,2 +1,23 @@
-# python-object-as-daemon
-Tiny utility to launch an object in a separate process, possibly using another python executable/environment. The object may be accessed from the main process through a proxy with similar behaviour. This project relies on the default multiprocessing module, therefore the child environment does not require any particular package to be present (not even this package). It makes it quite convenient to launch tasks/tests on specific environments.
+[![Documentation Status](https://readthedocs.org/projects/pyoad/badge/?version=latest)](http://pyoad.readthedocs.io/en/latest/?badge=latest)
+
+# python-object-as-daemon (pyoad)
+
+Project page : [official](http://pyoad.readthedocs.io), [backup](https://smarie.github.io/python-object-as-daemon/)
+
+## What's new
+
+* Doc now generated from markdown using [mkdocs](http://www.mkdocs.org/)
+
+## Want to contribute ?
+
+Contributions are welcome ! Simply fork this project on github, commit your contributions, and create pull requests.
+
+Here is a non-exhaustive list of interesting open topics: https://github.com/smarie/python-object-as-daemon/issues
+
+## Packaging
+
+This project uses `setuptools_scm` to synchronise the version number. Therefore the following command should be used for development snapshots as well as official releases: 
+
+```bash
+python setup.py egg_info bdist_wheel rotate -m.whl -k3
+```
