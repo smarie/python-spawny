@@ -1,8 +1,6 @@
-[![Documentation Status](https://readthedocs.org/projects/pyoad/badge/?version=latest)](http://pyoad.readthedocs.io/en/latest/?badge=latest)
-
 # python-object-as-daemon (pyoad)
 
-Project page : [official](http://pyoad.readthedocs.io), [backup](https://smarie.github.io/python-object-as-daemon/)
+Project page : [made with mkdocs](https://smarie.github.io/python-object-as-daemon/)
 
 ## What's new
 
