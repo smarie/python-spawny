@@ -19,3 +19,10 @@ This project uses `setuptools_scm` to synchronise the version number. Therefore 
 ```bash
 python setup.py egg_info bdist_wheel rotate -m.whl -k3
 ```
+
+### Releasing memo
+
+```bash
+twine upload dist/* -r pypitest
+twine upload dist/*
+```
