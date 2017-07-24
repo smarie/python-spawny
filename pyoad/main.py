@@ -33,7 +33,7 @@ ATTR_CMD = 3
 _default_logger = logging.getLogger('pyoad')
 ch = logging.StreamHandler(sys.stdout)
 _default_logger.addHandler(ch)
-
+# _default_logger.setLevel(logging.DEBUG)
 
 # TODO maybe it is possible to actually send the initial object to the daemon. Not sure why it would be interesting..
 
@@ -132,6 +132,8 @@ class ProxifyDunderMeta(type):
         to_ignore = set("__%s__" % n for n in cls.__ignore__.split())
         to_ignore.update(set(dct.keys()))
         replace_all_dundermethods_with_getattr(to_ignore, cls, cls, is_class=True)
+        # add everything from dict class so that at least
+        replace_all_dundermethods_with_getattr(to_ignore, dict, cls, is_class=True)
 
 
 class ObjectDaemonProxy(metaclass=ProxifyDunderMeta):
@@ -142,7 +144,7 @@ class ObjectDaemonProxy(metaclass=ProxifyDunderMeta):
     https://stackoverflow.com/questions/9057669/how-can-i-intercept-calls-to-pythons-magic-methods-in-new-style-classes
     """
 
-    __ignore__ = "class mro new init setattr getattr getattribute dict del doc name qualname module"
+    __ignore__ = "class mro new init setattr getattr getattribute dict del dir doc name qualname module"
 
     def __init__(self, obj_instance_or_definition: Union[Any, InstanceDefinition], python_exe: str = None,
                  logger: Logger = _default_logger):
@@ -161,6 +163,8 @@ class ObjectDaemonProxy(metaclass=ProxifyDunderMeta):
         self.logger = logger or _default_logger
 
         # --proxify all dunder methods from the instance type
+        # unfortunately this does not help much since for new-style classes, special methods are only looked up on the
+        # class not the instance. That's why we try to register as much special methods as possible in ProxifyDunderMeta
         instance_type = obj_instance_or_definition.get_type() \
             if isinstance(obj_instance_or_definition, InstanceDefinition) else type(obj_instance_or_definition)
         replace_all_dundermethods_with_getattr(set("__%s__" % n for n in ObjectDaemonProxy.__ignore__.split()),

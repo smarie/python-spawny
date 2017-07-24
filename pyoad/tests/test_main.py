@@ -40,12 +40,18 @@ def test_mini_instance_def():
     print(daemon_strio.getvalue())
 
 
+def test_mini_instance_def_primitives():
+    daemon_str = ObjectDaemonProxy(InstanceDefinition('builtins', 'str', 'hello, world!'))
+    print(daemon_str)
+
+
 def test_mini_instance():
     daemon_strio = ObjectDaemonProxy('hello, world!')
     print(daemon_strio)  # str then repr
     print('Explicit str required: ' + str(daemon_strio))  # str
     print('With str formatting:  %s  ' % daemon_strio)
     print('Explicit repr: ' + repr(daemon_strio))
+    print('Subscript: ' + daemon_strio[0:5])
 
 TEST_STR = 'str\nhello'
 

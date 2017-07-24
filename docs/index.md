@@ -4,33 +4,54 @@ Tiny utility to spawn an object in a separate process, possibly using another py
 * the child environment does not require any particular package to be present (not even this package). It makes it quite convenient to launch tasks/tests on specific environments.
 * communication between processes is done using multiprocessing Pipes
 
-# Installing
+## Installing
 
 ```bash
 > pip install pyoad
 ```
 
-# Usage
+## Basic Usage
 
-Let us create a remote StringIO instance and call its `get_value` method.
+### Creating
+
+Let us create a string instance and send it into a daemon:
 
 ```python
 from pyoad import ObjectDaemonProxy
-daemon_strio = ObjectDaemonProxy('io', 'StringIO', 'hello, world!')
-print(daemon_strio.getvalue())
+daemon_str = ObjectDaemonProxy('hello, world!')
 ```
 
 The outcome is :
 
 ```bash
-[15756] Object daemon started in : C:\...\python.exe
-hello, world!
+[15756] Object daemon started in : C:\Anaconda3\envs\tools\python.exe
 ```
 
-Note that the process id is printed, for reference. You can check in your OS process manager that there is a new python process running under this pid. Now if you dispose of the object by releasing any reference to it, the process automatically terminates:
+Note that the spawned process id is printed, for reference (here, `[15756]`). You can check in your OS process manager that there is a new python process running under this pid.
+
+
+### Calling
+ 
+You may now interact with the proxy as if the object were still local:
 
 ```python
-daemon_strio = None
+print(daemon_str)
+print(daemon_str[0:5])
+```
+
+```bash
+hello, world!
+hello
+```
+
+### Disposing
+
+If you dispose of the object by releasing any reference to it, the daemon process will automatically terminate the next time the python garbage collector runs:
+
+```python
+daemon_str = None
+import gc
+gc.collect()  # explicitly ask for garbage collection right now
 ```
 
 Displays:
@@ -40,7 +61,55 @@ Displays:
 [15756] Object daemon  terminating
 ```
 
-# See Also
+## Advanced
+
+### Daemon-side instantiation
+
+In most cases you'll probably want the daemon to instantiate the object, not the main process. For this purpose the `InstanceDefinition` class may be used to describe what you want to instantiate:
+
+```python
+from pyoad import ObjectDaemonProxy, InstanceDefinition
+definition = InstanceDefinition('io', 'StringIO', 'hello, world!')
+daemon_strio = ObjectDaemonProxy(definition)
+print(daemon_strio.getvalue())
+```
+
+Note that the module name may be set to `builtins` for built-ins:
+
+```python
+from pyoad import ObjectDaemonProxy, InstanceDefinition
+daemon_str_int = ObjectDaemonProxy(InstanceDefinition('builtins', 'str', 1))
+print(daemon_str_int)
+```
+
+Note: if the module is set to `None`, the class name is looked for in `globals()`
+
+### Choice of python executable/environment
+
+You may wish to run the daemon in a given python environment, typically different from the one your main process runs into:
+
+```python
+daemon = ObjectDaemonProxy(..., python_exe='<path_to_python.exe>')
+```
+
+
+### Log levels
+
+This is how you change the module default logging level : 
+
+```python
+import logging
+logging.getLogger('pyoad').setLevel(logging.DEBUG)
+```
+
+Otherwise you may also wish to provide your own logger:
+
+```python
+daemon = ObjectDaemonProxy(..., logger = MyLogger())
+```
+
+
+## See Also
 
 There are many libraries out there that provide much more functionality to distribute objects. The difference with `pyoad` is that they are bigger and typically require something to be installed on the server side. However the gain in features is often incredibly high (distribution over networks, object registries, compliance with other languages...). Check them out ! 
 
@@ -55,7 +124,6 @@ Some smaller projects from the community:
 
 
 *Do you like this library ? You might also like [these](https://github.com/smarie?utf8=%E2%9C%93&tab=repositories&q=&type=&language=python)* 
-
 
 ## Want to contribute ?
 
