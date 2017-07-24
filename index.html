@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="A short description of my project">
+      
+      
+      
+      
+        <link rel="shortcut icon" href="./assets/images/favicon.png">
+      
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.7.4">
+    
+    
+      
+        <title>python-object-as-daemon</title>
+      
+    
+    
+      <script src="./assets/javascripts/modernizr-1df76c4e58.js"></script>
+    
+    
+      <link rel="stylesheet" href="./assets/stylesheets/application-769c285a91.css">
+      
+    
+    
+      
+        
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+  
+  
+  
+    <body>
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <a href="." title="python-object-as-daemon" class="md-icon md-icon--home md-header-nav__button">
+          </a>
+        
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <span class="md-flex__ellipsis md-header-nav__title">
+          
+            
+              
+            
+            Home
+          
+        </span>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+          
+<div class="md-search" data-md-component="search">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" accesskey="s" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">close</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result" data-md-lang-search="">
+          <div class="md-search-result__meta" data-md-lang-result-none="No matching documents" data-md-lang-result-one="1 matching document" data-md-lang-result-other="# matching documents">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/smarie/python-object-as-daemon" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      GitHub
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    
+      <i class="md-icon md-icon--home md-nav__button"></i>
+    
+    python-object-as-daemon
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/smarie/python-object-as-daemon" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      GitHub
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Home
+      </label>
+    
+    <a href="." title="Home" class="md-nav__link md-nav__link--active">
+      Home
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing" title="Installing" class="md-nav__link">
+    Installing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" title="Basic Usage" class="md-nav__link">
+    Basic Usage
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating" title="Creating" class="md-nav__link">
+    Creating
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calling" title="Calling" class="md-nav__link">
+    Calling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disposing" title="Disposing" class="md-nav__link">
+    Disposing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced" title="Advanced" class="md-nav__link">
+    Advanced
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daemon-side-instantiation" title="Daemon-side instantiation" class="md-nav__link">
+    Daemon-side instantiation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choice-of-python-executableenvironment" title="Choice of python executable/environment" class="md-nav__link">
+    Choice of python executable/environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-levels" title="Log levels" class="md-nav__link">
+    Log levels
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" title="See Also" class="md-nav__link">
+    See Also
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#want-to-contribute" title="Want to contribute ?" class="md-nav__link">
+    Want to contribute ?
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installing" title="Installing" class="md-nav__link">
+    Installing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" title="Basic Usage" class="md-nav__link">
+    Basic Usage
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating" title="Creating" class="md-nav__link">
+    Creating
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calling" title="Calling" class="md-nav__link">
+    Calling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disposing" title="Disposing" class="md-nav__link">
+    Disposing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced" title="Advanced" class="md-nav__link">
+    Advanced
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#daemon-side-instantiation" title="Daemon-side instantiation" class="md-nav__link">
+    Daemon-side instantiation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choice-of-python-executableenvironment" title="Choice of python executable/environment" class="md-nav__link">
+    Choice of python executable/environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-levels" title="Log levels" class="md-nav__link">
+    Log levels
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" title="See Also" class="md-nav__link">
+    See Also
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#want-to-contribute" title="Want to contribute ?" class="md-nav__link">
+    Want to contribute ?
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/smarie/python-object-as-daemon/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">edit</a>
+                
+                
+                <h1 id="python-object-as-daemon-pyoad">python-object-as-daemon (pyoad)<a class="headerlink" href="#python-object-as-daemon-pyoad" title="Permanent link">&para;</a></h1>
+<p>Tiny utility to spawn an object in a separate process, possibly using another python executable/environment. The object may be accessed from the main process through a proxy with similar behaviour. This project relies on the default multiprocessing module, therefore:</p>
+<ul>
+<li>the child environment does not require any particular package to be present (not even this package). It makes it quite convenient to launch tasks/tests on specific environments.</li>
+<li>communication between processes is done using multiprocessing Pipes</li>
+</ul>
+<h2 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span>&gt; pip install pyoad
+</pre></div>
+
+
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<h3 id="creating">Creating<a class="headerlink" href="#creating" title="Permanent link">&para;</a></h3>
+<p>Let us create a string instance and send it into a daemon:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pyoad</span> <span class="kn">import</span> <span class="n">ObjectDaemonProxy</span>
+<span class="n">daemon_str</span> <span class="o">=</span> <span class="n">ObjectDaemonProxy</span><span class="p">(</span><span class="s1">&#39;hello, world!&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The outcome is :</p>
+<div class="codehilite"><pre><span></span><span class="o">[</span><span class="m">15756</span><span class="o">]</span> Object daemon started in : C:<span class="se">\A</span>naconda3<span class="se">\e</span>nvs<span class="se">\t</span>ools<span class="se">\p</span>ython.exe
+</pre></div>
+
+
+<p>Note that the spawned process id is printed, for reference (here, <code>[15756]</code>). You can check in your OS process manager that there is a new python process running under this pid.</p>
+<h3 id="calling">Calling<a class="headerlink" href="#calling" title="Permanent link">&para;</a></h3>
+<p>You may now interact with the proxy as if the object were still local:</p>
+<div class="codehilite"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">daemon_str</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">daemon_str</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>hello, world!
+hello
+</pre></div>
+
+
+<h3 id="disposing">Disposing<a class="headerlink" href="#disposing" title="Permanent link">&para;</a></h3>
+<p>If you dispose of the object by releasing any reference to it, the daemon process will automatically terminate the next time the python garbage collector runs:</p>
+<div class="codehilite"><pre><span></span><span class="n">daemon_str</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+<span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>  <span class="c1"># explicitly ask for garbage collection right now</span>
+</pre></div>
+
+
+<p>Displays:</p>
+<div class="codehilite"><pre><span></span><span class="o">[</span><span class="m">15756</span><span class="o">]</span> Object daemon  was asked to <span class="nb">exit</span> - closing communication connection
+<span class="o">[</span><span class="m">15756</span><span class="o">]</span> Object daemon  terminating
+</pre></div>
+
+
+<h2 id="advanced">Advanced<a class="headerlink" href="#advanced" title="Permanent link">&para;</a></h2>
+<h3 id="daemon-side-instantiation">Daemon-side instantiation<a class="headerlink" href="#daemon-side-instantiation" title="Permanent link">&para;</a></h3>
+<p>In most cases you'll probably want the daemon to instantiate the object, not the main process. For this purpose the <code>InstanceDefinition</code> class may be used to describe what you want to instantiate:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pyoad</span> <span class="kn">import</span> <span class="n">ObjectDaemonProxy</span><span class="p">,</span> <span class="n">InstanceDefinition</span>
+<span class="n">definition</span> <span class="o">=</span> <span class="n">InstanceDefinition</span><span class="p">(</span><span class="s1">&#39;io&#39;</span><span class="p">,</span> <span class="s1">&#39;StringIO&#39;</span><span class="p">,</span> <span class="s1">&#39;hello, world!&#39;</span><span class="p">)</span>
+<span class="n">daemon_strio</span> <span class="o">=</span> <span class="n">ObjectDaemonProxy</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">daemon_strio</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span>
+</pre></div>
+
+
+<p>Note that the module name may be set to <code>builtins</code> for built-ins:</p>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">pyoad</span> <span class="kn">import</span> <span class="n">ObjectDaemonProxy</span><span class="p">,</span> <span class="n">InstanceDefinition</span>
+<span class="n">daemon_str_int</span> <span class="o">=</span> <span class="n">ObjectDaemonProxy</span><span class="p">(</span><span class="n">InstanceDefinition</span><span class="p">(</span><span class="s1">&#39;builtins&#39;</span><span class="p">,</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">daemon_str_int</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Note: if the module is set to <code>None</code>, the class name is looked for in <code>globals()</code></p>
+<h3 id="choice-of-python-executableenvironment">Choice of python executable/environment<a class="headerlink" href="#choice-of-python-executableenvironment" title="Permanent link">&para;</a></h3>
+<p>You may wish to run the daemon in a given python environment, typically different from the one your main process runs into:</p>
+<div class="codehilite"><pre><span></span><span class="n">daemon</span> <span class="o">=</span> <span class="n">ObjectDaemonProxy</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">python_exe</span><span class="o">=</span><span class="s1">&#39;&lt;path_to_python.exe&gt;&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<h3 id="log-levels">Log levels<a class="headerlink" href="#log-levels" title="Permanent link">&para;</a></h3>
+<p>This is how you change the module default logging level : </p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;pyoad&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Otherwise you may also wish to provide your own logger:</p>
+<div class="codehilite"><pre><span></span><span class="n">daemon</span> <span class="o">=</span> <span class="n">ObjectDaemonProxy</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">MyLogger</span><span class="p">())</span>
+</pre></div>
+
+
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<p>There are many libraries out there that provide much more functionality to distribute objects. The difference with <code>pyoad</code> is that they are bigger and typically require something to be installed on the server side. However the gain in features is often incredibly high (distribution over networks, object registries, compliance with other languages...). Check them out ! </p>
+<ul>
+<li><a href="https://pythonhosted.org/Pyro4/">PyRo</a></li>
+<li><a href="https://rpyc.readthedocs.io/en/latest/">RPyC</a></li>
+</ul>
+<p>Some smaller projects from the community:</p>
+<ul>
+<li><a href="https://pypi.python.org/pypi/cluster-func">cluster-func</a></li>
+<li><a href="https://pypi.python.org/pypi/dproxify">dproxify</a></li>
+</ul>
+<p><em>Do you like this library ? You might also like <a href="https://github.com/smarie?utf8=%E2%9C%93&amp;tab=repositories&amp;q=&amp;type=&amp;language=python">these</a></em> </p>
+<h2 id="want-to-contribute">Want to contribute ?<a class="headerlink" href="#want-to-contribute" title="Permanent link">&para;</a></h2>
+<p>Details on the github page: <a href="https://github.com/smarie/python-classtools-autocode">https://github.com/smarie/python-object-as-daemon</a> </p>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        and
+        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="./assets/javascripts/application-c35428f87f.js"></script>
+      
+      
+      <script>app.initialize({url:{base:"."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>
