@@ -5,7 +5,7 @@ from io import StringIO
 
 import pytest
 
-from pyoad import init_mp_context, ObjectDaemonProxy
+from pyoad import init_mp_context, ObjectDaemonProxy, InstanceDefinition
 
 THIS_DIR = path.dirname(path.abspath(__file__))
 
@@ -35,10 +35,17 @@ def create_temporary_venv(env_name: str, py_version: str):
     return path.join(env_path, 'python.exe')
 
 
-def test_mini():
-    daemon_strio = ObjectDaemonProxy('io', 'StringIO', 'hello, world!')
+def test_mini_instance_def():
+    daemon_strio = ObjectDaemonProxy(InstanceDefinition('io', 'StringIO', 'hello, world!'))
     print(daemon_strio.getvalue())
 
+
+def test_mini_instance():
+    daemon_strio = ObjectDaemonProxy('hello, world!')
+    print(daemon_strio)  # str then repr
+    print('Explicit str required: ' + str(daemon_strio))  # str
+    print('With str formatting:  %s  ' % daemon_strio)
+    print('Explicit repr: ' + repr(daemon_strio))
 
 TEST_STR = 'str\nhello'
 
@@ -55,7 +62,7 @@ def test_main():
 
     # create daemon object
     print('daemon test')
-    o_r = ObjectDaemonProxy('io', 'StringIO', TEST_STR, python_exe=python_exe)
+    o_r = ObjectDaemonProxy(InstanceDefinition('io', 'StringIO', TEST_STR), python_exe=python_exe)
     perform_test_actions(o_r)
 
 
