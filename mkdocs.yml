@@ -1,5 +1,5 @@
 site_name: python-object-as-daemon
-site_description: 'A short description of my project'
+# site_description: 'A short description of my project'
 repo_url: https://github.com/smarie/python-object-as-daemon
 pages:
     - Home: index.md
