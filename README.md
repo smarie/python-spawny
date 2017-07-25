@@ -5,6 +5,8 @@ Project page : [https://smarie.github.io/python-object-as-daemon/](https://smari
 ## What's new
 
 * Doc now generated from markdown using [mkdocs](http://www.mkdocs.org/)
+* most special methods are now correctly proxified
+* object instance can now be created on either side (main process or daemon)
 
 ## Want to contribute ?
 
