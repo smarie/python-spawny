@@ -12,7 +12,7 @@ Project page : [https://smarie.github.io/python-object-as-daemon/](https://smari
 
 Contributions are welcome ! Simply fork this project on github, commit your contributions, and create pull requests.
 
-Here is a non-exhaustive list of interesting open topics: https://github.com/smarie/python-object-as-daemon/issues
+Here is a non-exhaustive list of interesting open topics: [https://github.com/smarie/python-object-as-daemon/issues](https://github.com/smarie/python-object-as-daemon/issues)
 
 ## Packaging
 
