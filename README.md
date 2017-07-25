@@ -1,6 +1,6 @@
 # python-object-as-daemon (pyoad)
 
-Project page : [made with mkdocs](https://smarie.github.io/python-object-as-daemon/)
+Project page : [https://smarie.github.io/python-object-as-daemon/](https://smarie.github.io/python-object-as-daemon/)
 
 ## What's new
 
