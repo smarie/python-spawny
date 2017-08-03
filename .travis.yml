@@ -25,8 +25,9 @@ before_install:
 
 # command to install dependencies
 install:
-  - pip install -r requirements-setup.txt -r requirements-test.txt .
-#  - pip install .
+  - pip install -r requirements-setup.txt
+  - pip install -r requirements-test.txt
+  - pip install .
 
 #  - pip install codecov
 #
