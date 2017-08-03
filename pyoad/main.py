@@ -2,7 +2,6 @@ import multiprocessing as mp
 import os
 from importlib import import_module
 from logging import Logger
-from multiprocessing.connection import PipeConnection
 
 import sys
 from types import MethodType
@@ -291,7 +290,7 @@ class ObjectDaemonProxy(metaclass=ProxifyDunderMeta):
         self.logger.info('Object proxy terminated successfully')
 
 
-def daemon(conn: PipeConnection, obj_instance_or_definition: Union[Any, InstanceDefinition]):
+def daemon(conn, obj_instance_or_definition: Union[Any, InstanceDefinition]):
     """
     Implements a daemon connected to the multiprocessing Pipe provided as first argument.
     This daemon will
@@ -300,7 +299,7 @@ def daemon(conn: PipeConnection, obj_instance_or_definition: Union[Any, Instance
 
     Note that exceptions are correctly sent back too.
 
-    :param conn:
+    :param conn: the pipe connection (on windows a PipeConnection instance, but behaviour is different on linux)
     :param obj_instance_or_definition: either an object instance to be used to execute the commands, or an
     InstanceDefinition to be used to instantiate the object locally.
     :return:
@@ -345,11 +344,11 @@ def daemon(conn: PipeConnection, obj_instance_or_definition: Union[Any, Instance
 CmdPayload = Tuple[str, List, Dict]
 
 
-def exec_cmd_and_send_results(conn: PipeConnection, print_prefix: str, impl: Any, cmd_type: int, cmd_body: CmdPayload):
+def exec_cmd_and_send_results(conn, print_prefix: str, impl: Any, cmd_type: int, cmd_body: CmdPayload):
     """
     Executes command of type cmd_type with payload cmd_body on object impl, and returns the results in the connection
 
-    :param conn:
+    :param conn: the pipe connection (on windows a PipeConnection instance, but behaviour is different on linux)
     :param print_prefix:
     :param impl:
     :param cmd_type:
