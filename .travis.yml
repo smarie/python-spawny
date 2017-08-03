@@ -22,7 +22,7 @@ python:
 
 before_install:
   # grant the possibility to push on github pages
-  - openssl aes-256-cbc -K $encrypted_c4929e50881e_key -iv $encrypted_c4929e50881e_iv -in github_travis_rsa.enc -out github_travis_rsa -d
+  - openssl aes-256-cbc -K $encrypted_3c13b9d66aac_key -iv $encrypted_3c13b9d66aac_iv -in github_travis_rsa.enc -out github_travis_rsa -d
   - sudo apt-get install pandoc
 
 install:
