@@ -41,10 +41,13 @@ after_success:
 # - coveralls is an alternative to codecov
 # ***documentation***
   - mkdocs build
-  # grant the possibility to push on the repo
+  # ---grant the possibility to push on the repo---
   - openssl aes-256-cbc -K $encrypted_3c13b9d66aac_key -iv $encrypted_3c13b9d66aac_iv -in github_travis_rsa.enc -out github_travis_rsa -d
-  - ssh-add github_travis_rsa
-  - mkdocs gh-deploy -v
+  - chmod 600 github_travis_rsa
+  - eval `ssh-agent -s`  # launch the authentication agent
+  - ssh-add github_travis_rsa  # register the key
+  # -----------------------------------------------
+  - mkdocs gh-deploy
 
 #matrix:
 #    fast_finish: true
