@@ -14,7 +14,7 @@ here = path.abspath(path.dirname(__file__))
 # *************** Dependencies *********
 INSTALL_REQUIRES = []
 DEPENDENCY_LINKS = []
-SETUP_REQUIRES = ['pytest-runner','setuptools_scm', 'pypandoc', 'pandoc']
+SETUP_REQUIRES = ['pytest-runner','setuptools_scm', 'pypandoc', 'pandoc', 'mkdocs']
 TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov', 'psutil']
 EXTRAS_REQUIRE = {}
 # simple check

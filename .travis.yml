@@ -35,8 +35,12 @@ script:
   - pytest --cov-report term-missing --cov=./pyoad -v pyoad/tests/
 
 after_success:
+# ***reporting***
   - codecov
 # - coveralls is an alternative to codecov
+# ***documentation***
+  - mkdocs build
+  - mkdocs gh-deploy
 
 #matrix:
 #    fast_finish: true
