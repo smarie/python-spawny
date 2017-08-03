@@ -20,6 +20,10 @@ python:
 #  - "pypy-5.3.1"
 #
 
+env:
+  global:
+  - GH_REF: git@github.com:smarie/python-object-as-daemon.git
+
 before_install:
   - sudo apt-get install pandoc
 
@@ -41,13 +45,17 @@ after_success:
 # - coveralls is an alternative to codecov
 # ***documentation***
   - mkdocs build
+#  - mkdocs gh-deploy requires special care :
   # ---grant the possibility to push on the repo---
   - openssl aes-256-cbc -K $encrypted_60e2bdb32373_key -iv $encrypted_60e2bdb32373_iv -in github_travis_rsa.enc -out github_travis_rsa -d
   - chmod 600 github_travis_rsa
   - eval `ssh-agent -s`  # launch the authentication agent
   - ssh-add github_travis_rsa  # register the key
-  # -----------------------------------------------
-  - mkdocs gh-deploy
+  - git config user.name "Automatic Publish"
+  - git config user.email "sylvain.marie@schneider-electric.com"
+  - git remote add gh-token "${GH_REF}";
+  - git fetch gh-token && git fetch gh-token gh-pages:gh-pages;
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then echo "Pushing to github"; PYTHONPATH=pyoad/ mkdocs gh-deploy -v --clean --remote-name gh-token; git push gh-token gh-pages; fi;
 
 #matrix:
 #    fast_finish: true
