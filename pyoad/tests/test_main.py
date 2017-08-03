@@ -45,14 +45,29 @@ def _create_temporary_venv(env_name: str, py_version: str):
 
     # Create virtual environment
     if not path.isdir(env_path):
-        cmd = ['conda', 'create', '--prefix', env_path, 'python=' + py_version, '--yes']
-        print('Creating Test virtual environment : ' + ' '.join(cmd))
-        subprocess.run(cmd)
-        print('Test virtual environment created')
+        try:
+            cmd = ['conda', 'create', '--prefix', env_path, 'python=' + py_version, '--yes']
+            print('Creating Test virtual environment with conda: ' + ' '.join(cmd))
+            subprocess.run(cmd)
+            print('Test virtual environment created')
+        except:
+            cmd = ['python', '- m', 'venv', env_path]
+            print('Conda does not seem to be available. Creating Test virtual environment with venv (selected version '
+                  'number will be ignored): ' + ' '.join(cmd))
+            subprocess.run(cmd)
+            print('Test virtual environment created')
     else:
         print('Test virtual environment already exists')
-    return path.join(env_path, 'python.exe')
 
+    if path.exists(path.join(env_path, 'python.exe')):
+        # conda
+        print('Test virtual environment is conda')
+        python_exe = path.join(env_path, 'python.exe')
+    else:
+        # venv
+        print('Test virtual environment is venv')
+        python_exe = path.join(env_path, 'scripts', 'python.exe')
+    return python_exe
 
 def test_main():
 
