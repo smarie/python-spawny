@@ -7,9 +7,23 @@ https://github.com/pypa/sampleproject
 from os import path
 
 from setuptools import setup, find_packages
-from setuptools_scm import get_version
+from warnings import warn
 
 here = path.abspath(path.dirname(__file__))
+
+# *************** Dependencies *********
+INSTALL_REQUIRES = []
+DEPENDENCY_LINKS = []
+SETUP_REQUIRES = ['pytest-runner','setuptools_scm', 'pypandoc', 'pandoc']
+TESTS_REQUIRE = ['pytest', 'pytest-logging']
+EXTRAS_REQUIRE = {}
+# simple check
+try:
+    from setuptools_scm import get_version
+except Exception as e:
+    raise Exception('Required packages for setup not found. You may wish you execute '
+                    '"pip install -r setup-requirements.txt" to install them or alternatively install them manually '
+                    'using conda or other system. The list is : ' + str(SETUP_REQUIRES)) from e
 
 # ************** ID card *****************
 DISTNAME = 'pyoad'
@@ -24,6 +38,7 @@ version_for_download_url = get_version()
 DOWNLOAD_URL = URL + '/tarball/' + version_for_download_url
 
 KEYWORDS = 'spawn object process daemon proxy rpc distribute'
+
 # --Get the long description from the README file
 #with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 #    LONG_DESCRIPTION = f.read()
@@ -41,12 +56,6 @@ except(ImportError):
 # THIS IS DEPRECATED AS WE NOW USE GIT TO MANAGE VERSION
 # with open(path.join(here, 'VERSION')) as version_file:
 #    VERSION = version_file.read().strip()
-
-INSTALL_REQUIRES = []
-DEPENDENCY_LINKS = []
-SETUP_REQUIRES = ['pytest-runner','setuptools_scm', 'pypandoc', 'pandoc']
-TESTS_REQUIRE = ['pytest', 'pytest-logging']
-EXTRAS_REQUIRE = {}
 
 setup(
     name=DISTNAME,
