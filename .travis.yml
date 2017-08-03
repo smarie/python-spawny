@@ -21,6 +21,8 @@ python:
 #
 
 before_install:
+  # grant the possibility to push on github pages
+  - openssl aes-256-cbc -K $encrypted_c8a0de9e8119_key -iv $encrypted_c8a0de9e8119_iv -in github_travis_rsa.enc -out github_travis_rsa -d
   - sudo apt-get install pandoc
 
 install:
@@ -41,9 +43,7 @@ after_success:
 # - coveralls is an alternative to codecov
 # ***documentation***
   - mkdocs build
-  # grant the possibility to push on github pages
-  - openssl aes-256-cbc -K $encrypted_c8a0de9e8119_key -iv $encrypted_c8a0de9e8119_iv -in github_travis_rsa.enc -out github_travis_rsa -d
-  - mkdocs gh-deploy
+  - mkdocs gh-deploy -v
 
 #matrix:
 #    fast_finish: true
