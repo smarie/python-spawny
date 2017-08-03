@@ -6,7 +6,6 @@ from logging import Logger
 import sys
 from types import MethodType
 from typing import Optional, Union, Any, List, Dict, Tuple
-from warnings import warn
 
 import logging
 
