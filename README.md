@@ -7,6 +7,7 @@ Project page : [https://smarie.github.io/python-object-as-daemon/](https://smari
 
 ## What's new
 
+* Travis and codecov integration
 * Doc now generated from markdown using [mkdocs](http://www.mkdocs.org/)
 * most special methods are now correctly proxified
 * object instance can now be created on either side (main process or daemon)
@@ -17,6 +18,20 @@ Contributions are welcome ! Simply fork this project on github, commit your cont
 
 Here is a non-exhaustive list of interesting open topics: [https://github.com/smarie/python-object-as-daemon/issues](https://github.com/smarie/python-object-as-daemon/issues)
 
+## Running the tests
+
+This project uses `pytest`. 
+
+```bash
+pytest -v pyoad/tests/
+```
+
+You may need to install requirements for setup beforehand, using 
+
+```bash
+pip install -r requirements-test.txt
+```
+
 ## Packaging
 
 This project uses `setuptools_scm` to synchronise the version number. Therefore the following command should be used for development snapshots as well as official releases: 
@@ -25,7 +40,27 @@ This project uses `setuptools_scm` to synchronise the version number. Therefore 
 python setup.py egg_info bdist_wheel rotate -m.whl -k3
 ```
 
-### Releasing memo
+You may need to install requirements for setup beforehand, using 
+
+```bash
+pip install -r requirements-setup.txt
+```
+
+## Generating the documentation page
+
+This project uses `mkdocs` to generate its documentation page. Therefore building a local copy of the doc page may be done using:
+
+```bash
+mkdocs build
+```
+
+You may need to install requirements for doc beforehand, using 
+
+```bash
+pip install -r requirements-doc.txt
+```
+
+### PyPI Releasing memo
 
 ```bash
 twine upload dist/* -r pypitest
