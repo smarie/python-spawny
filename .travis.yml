@@ -32,8 +32,8 @@ install:
 #
 #
 ## command to run tests
-#script:
-#  - pytest
+script:
+  - pytest
 #  - coverage run tests.py
 #  - py.test --cov-report term-missing --cov app -v
 #
