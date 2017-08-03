@@ -106,3 +106,14 @@ def perform_test_actions(strio_obj: StringIO, ref_str):
     strio_obj.close()
     with pytest.raises(ValueError):
         print(strio_obj.getvalue())
+
+
+def teardown_module(module):
+    """
+    Make sure that gc runs at least once explicitly at the end of the test suite, so that no stale process remains.
+    This happens sometimes in Travis CI
+    """
+    print('tearing down...')
+    import gc
+    gc.collect()
+    print('DONE')
