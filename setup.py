@@ -51,7 +51,7 @@ except(ImportError):
          'documentation correctly')
     LONG_DESCRIPTION = open('README.md').read()
 
-# ************* VERSION AND DEPENDENCIES **************
+# ************* VERSION **************
 # --Get the Version number from VERSION file, see https://packaging.python.org/single_source_version/ option 4.
 # THIS IS DEPRECATED AS WE NOW USE GIT TO MANAGE VERSION
 # with open(path.join(here, 'VERSION')) as version_file:
