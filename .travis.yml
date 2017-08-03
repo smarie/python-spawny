@@ -27,19 +27,21 @@ before_install:
 install:
   - pip install -r requirements-setup.txt
   - pip install -r requirements-test.txt
+  - pip install codecov  # https://github.com/codecov/example-python
   - pip install .
 
-#  - pip install codecov
-#
-#
 ## command to run tests
 script:
   - pytest -v
 #  - coverage run tests.py
 #  - py.test --cov-report term-missing --cov app -v
 #
-#after_success:
-#  - codecov
+after_success:
+  - codecov
 #
 #matrix:
 #    fast_finish: true
+
+notifications:
+  email:
+    on_success: never  # options: [always|never|change] default: always
