@@ -1,3 +1,4 @@
 pytest
 pytest-logging
 pytest-cov
+psutil
