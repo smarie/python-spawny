@@ -32,7 +32,7 @@ install:
 
 script:
 #  - coverage run tests.py
-  - pytest --cov-report term-missing --cov=./pyoad -vv pyoad/tests/
+  - pytest --cov-report term-missing --cov=./pyoad -v pyoad/tests/
 
 after_success:
   - codecov
