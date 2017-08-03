@@ -23,22 +23,21 @@ python:
 before_install:
   - sudo apt-get install pandoc
 
-# command to install dependencies
 install:
   - pip install -r requirements-setup.txt
   - pip install -r requirements-test.txt
   - pip install codecov  # https://github.com/codecov/example-python
+# - pip install coveralls is an alternative to codecov
   - pip install .
 
-## command to run tests
 script:
-  - pytest --cov-report term-missing --cov=pyoad -v pyoad/tests/
 #  - coverage run tests.py
-#  - py.test --cov-report term-missing --cov app -v
-#
+  - pytest --cov-report term-missing --cov=pyoad -v pyoad/tests/
+
 after_success:
   - codecov
-#
+# - coveralls is an alternative to codecov
+
 #matrix:
 #    fast_finish: true
 
