@@ -3,6 +3,7 @@ import subprocess
 from os import path
 from io import StringIO
 
+import psutil
 import pytest
 
 from pyoad import init_mp_context, ObjectDaemonProxy, InstanceDefinition
@@ -113,7 +114,23 @@ def teardown_module(module):
     Make sure that gc runs at least once explicitly at the end of the test suite, so that no stale process remains.
     This happens sometimes in Travis CI
     """
-    print('tearing down...')
+    print('tearing down')
     import gc
     gc.collect()
+
+    # you may wish to create this object to check that the termination code works, but warning: in debug mode,
+    # the debugger will call its str() method after each step to refresh the 'variables' panel > might lock.
+    # o_r = ObjectDaemonProxy('to_terminate')
+
+    def on_terminate(proc):
+        print("process {} terminated with exit code {}".format(proc, proc.returncode))
+
+    procs = psutil.Process().children()
+    for p in procs:
+        p.terminate()
+
+    gone, still_alive = psutil.wait_procs(procs, timeout=3, callback=on_terminate)
+    for p in still_alive:
+        p.kill()
+
     print('DONE')
