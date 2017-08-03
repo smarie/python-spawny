@@ -107,4 +107,4 @@ ENV/
 site/
 
 tmp_venv/
-github_travis_rsa
+github_travis_rsa*
