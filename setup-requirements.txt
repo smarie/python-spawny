@@ -1,4 +1,4 @@
 pytest-runner
 setuptools_scm
-pypandoc
 pandoc
+pypandoc
