@@ -32,7 +32,7 @@ install:
 
 ## command to run tests
 script:
-  - pytest -v
+  - pytest --cov-report term-missing --cov=pyoad -v pyoad/tests/
 #  - coverage run tests.py
 #  - py.test --cov-report term-missing --cov app -v
 #
