@@ -26,6 +26,7 @@ before_install:
 install:
   - pip install -r requirements-setup.txt
   - pip install -r requirements-test.txt
+  - pip install -r requirements-doc.txt
   - pip install codecov  # https://github.com/codecov/example-python
 # - pip install coveralls is an alternative to codecov
   - pip install .
