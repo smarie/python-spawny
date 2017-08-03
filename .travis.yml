@@ -14,18 +14,24 @@ python:
 #  - "3.6-dev" # 3.6 development branch
 #  - "3.7-dev" # 3.7 development branch
 #  - "nightly" # currently points to 3.7-dev
+# PyPy versions
+#  - "pypy"  # PyPy2 2.5.0
+#  - "pypy3" # Pypy3 2.4.0
+#  - "pypy-5.3.1"
 #
 # command to install dependencies
-#install:
-##  - pip install codecov
-##  - "pip install -r requirements.txt"
-#  - "pip install ."
+install:
+  - pip install .
+#  - pip install -r requirements.txt
+#  - pip install codecov
+#
 #
 ## command to run tests
 #script:
 #  - pytest
 #  - coverage run tests.py
-
+#  - py.test --cov-report term-missing --cov app -v
+#
 #after_success:
 #  - codecov
 #
