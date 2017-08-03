@@ -1,6 +1,7 @@
 # python-object-as-daemon (pyoad)
 
-[![Build Status](https://travis-ci.org/smarie/python-object-as-daemon.svg?branch=master)](https://travis-ci.org/smarie/python-object-as-daemon)
+[![Build Status](https://travis-ci.org/smarie/python-object-as-daemon.svg?branch=master)](https://travis-ci.org/smarie/python-object-as-daemon) [![codecov](https://codecov.io/gh/smarie/python-object-as-daemon/branch/master/graph/badge.svg)](https://codecov.io/gh/smarie/python-object-as-daemon)
+
 
 Project page : [https://smarie.github.io/python-object-as-daemon/](https://smarie.github.io/python-object-as-daemon/)
 
