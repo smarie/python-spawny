@@ -27,6 +27,7 @@ env:
 before_install:
   - sudo apt-get install pandoc
   - sudo apt-get install ant
+  - sudo apt-get install ant-optional  # for junitreports
 
 install:
   - pip install -r ci_tools/requirements-setup.txt
@@ -72,7 +73,7 @@ deploy:
     secure: "dxBhCnO9fnIbEIRUm00+q/lNZ33GzgH0wYZe28BvwP3uYbkh8Rp2UBjlDY2CQM51iMh+3Qu+yesqFKFKECBglliWGw0RU6R2UCvL4q1t4dHV92a0Fu5iu5EKSyrbUv5pm/EcT8FCOpgip6AR3nuOfQlheiWXILFCzpYHweGFdw+zR9QjvfEbA1LwgORZOq2j7YxkFt8+RAOMZFU2Olcf/2XwtoEnpAAGP2nIJnuMy8ZECYiaIzq9z0kycyECq53IndqMN1waZfwgYXJnWRpp8uRF5Y/7U4t/7DZCeZMnvjGYwBs6ZTLa2CDXoZDYbatt/6sdTWDqK5jdhiEZ0lUfE7LeTkkXOA5wjSr/y8F5CCcLEd5dsnYM3e9Ykx4ADZi6jjqe3BEuL7v55ZueOsgQw9XiI39bLS4sv78+hwJgjWljSUKUnqpyXn3i6id9kakmzsbXhyGy6C21/BBZAqU+Cw6oR4HZm7ZwQLNllDMoARLppUqO4AapRhGfihRhz+zIgRqyvgnd0uyzN6X5gxWHaDPEjXyHXZvZxeHlUGeAr0UUkLFnjl4hGKtBt9YnvLpYBkiIa37rUuTYkA8os0J3OlFS5bQTH4WN6YaffLl7il90FP9UkIzl8K0QTjiRMEynRq8p3X7sezBhoPQpt5BI8dpyMrRaDWP42nYgZjTdZao="
   on:
     tags: true
-  server: https://test.pypi.org/legacy/
+#  server: https://test.pypi.org/legacy/
   distributions: "bdist_wheel"
 
 matrix:
