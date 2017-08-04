@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuites>
-  <testsuite errors="0" failures="0" id="0" name="pytest" package="" skips="0" tests="4" time="0.298">
-    <testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="17" name="test_mini_instance_def" time="0.02297663688659668">
+  <testsuite errors="0" failures="0" id="0" name="pytest" package="" skips="0" tests="4" time="0.231">
+    <testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="17" name="test_mini_instance_def" time="0.019231557846069336">
       <system-out>Replacing methods [&apos;__enter__&apos;, &apos;__exit__&apos;, &apos;__getstate__&apos;, &apos;__next__&apos;, &apos;__setstate__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
 Object proxy spawning Child process for object daemon
 Object proxy asking daemon to check if this is a method or an attribute: getvalue
-[4638] Object daemon started in : /home/travis/virtualenv/python3.6.2/bin/python
+[4610] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
 Object proxy received response from daemon : getvalue is a method
 Object proxy asking daemon to execute method: getvalue
 Object proxy received response from daemon : hello, world!
 hello, world!
 </system-out>
     </testcase>
-    <testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="22" name="test_mini_instance_def_primitives" time="0.018602371215820312">
+    <testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="22" name="test_mini_instance_def_primitives" time="0.014884233474731445">
       <system-out>Replacing methods [&apos;__add__&apos;, &apos;__getnewargs__&apos;, &apos;__mod__&apos;, &apos;__mul__&apos;, &apos;__rmod__&apos;, &apos;__rmul__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
 Object proxy spawning Child process for object daemon
 Object proxy asking daemon to check if this is a method or an attribute: __str__
-[4639] Object daemon started in : /home/travis/virtualenv/python3.6.2/bin/python
+[4611] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
 Object proxy received response from daemon : __str__ is a method
 Object proxy asking daemon to execute method: __str__
 Object proxy received response from daemon : hello, world!
 hello, world!
 </system-out>
     </testcase>
-    <testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="27" name="test_mini_instance" time="0.022121906280517578">
+    <testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="27" name="test_mini_instance" time="0.018167734146118164">
       <system-out>Replacing methods [&apos;__add__&apos;, &apos;__getnewargs__&apos;, &apos;__mod__&apos;, &apos;__mul__&apos;, &apos;__rmod__&apos;, &apos;__rmul__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
 Object proxy spawning Child process for object daemon
 Object proxy asking daemon to check if this is a method or an attribute: __str__
 Object proxy asking daemon to exit
-[4639] Object daemon  was asked to exit - closing communication connection
-[4639] Object daemon  terminating
-[4640] Object daemon started in : /home/travis/virtualenv/python3.6.2/bin/python
+[4611] Object daemon  was asked to exit - closing communication connection
+[4611] Object daemon  terminating
+[4612] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
 Object proxy received response from daemon : __str__ is a method
 Object proxy asking daemon to execute method: __str__
+Object proxy asking daemon to exit
+Object proxy terminated successfully
 Object proxy received response from daemon : hello, world!
 hello, world!
 Object proxy asking daemon to check if this is a method or an attribute: __str__
@@ -60,12 +62,12 @@ Traceback (most recent call last):
     self.terminate_daemon()
   File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 287, in terminate_daemon
     self.p.join(timeout=10000)
-  File &quot;/opt/python/3.6.2/lib/python3.6/multiprocessing/process.py&quot;, line 119, in join
+  File &quot;/opt/python/3.5.3/lib/python3.5/multiprocessing/process.py&quot;, line 119, in join
     assert self._parent_pid == os.getpid(), &apos;can only join a child process&apos;
 AssertionError: can only join a child process
 </system-err>
     </testcase>
-    <testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="73" name="test_main" time="0.06791281700134277">
+    <testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="73" name="test_main" time="0.06350946426391602">
       <system-out>Creating Test virtual environment with conda: conda create --prefix /home/travis/build/smarie/python-object-as-daemon/tmp_venv/tmp python=3.5.0 --yes
 Conda does not seem to be available. Creating Test virtual environment with venv (selected version number will be ignored): python - m venv /home/travis/build/smarie/python-object-as-daemon/tmp_venv/tmp
 Test virtual environment created
@@ -73,15 +75,9 @@ Test virtual environment is venv
 local test
 daemon test
 Replacing methods [&apos;__enter__&apos;, &apos;__exit__&apos;, &apos;__getstate__&apos;, &apos;__next__&apos;, &apos;__setstate__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
-Object proxy asking daemon to exit
-Object proxy terminated successfully
-Object proxy asking daemon to exit
-[4640] Object daemon  was asked to exit - closing communication connection
-[4640] Object daemon  terminating
-Object proxy terminated successfully
 Object proxy spawning Child process for object daemon
 Object proxy asking daemon to check if this is a method or an attribute: getvalue
-[4643] Object daemon started in : /home/travis/virtualenv/python3.6.2/bin/python
+[4615] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
 Object proxy received response from daemon : getvalue is a method
 Object proxy asking daemon to execute method: getvalue
 Object proxy received response from daemon : str
@@ -113,32 +109,22 @@ Object proxy asking daemon to execute method: getvalue
 Object proxy received error from daemon : I/O operation on closed file
 tearing down
 Object proxy asking daemon to exit
-[4638] Object daemon  was asked to exit - closing communication connection
-[4638] Object daemon  terminating
+[4615] Object daemon  was asked to exit - closing communication connection
+[4615] Object daemon  terminating
 Object proxy terminated successfully
 Object proxy asking daemon to exit
-Object proxy asking daemon to execute method: __repr__
-process psutil.Process(pid=4643 (terminated)) terminated with exit code -15
+[4610] Object daemon  was asked to exit - closing communication connection
+[4610] Object daemon  terminating
+Object proxy terminated successfully
+Object proxy asking daemon to exit
+[4612] Object daemon  was asked to exit - closing communication connection
+[4612] Object daemon  terminating
+Object proxy terminated successfully
 DONE
 </system-out>
       <system-err>Unknown option: - 
 usage: python [option] ... [-c cmd | -m mod | file | -] [arg] ...
 Try `python -h&apos; for more information.
-Exception ignored in: &lt;object repr() failed&gt;
-Traceback (most recent call last):
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 271, in __del__
-    self.terminate_daemon()
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 279, in terminate_daemon
-    self.remote_call_using_pipe(EXIT_CMD)
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 242, in remote_call_using_pipe
-    self.parent_conn.send((cmd_type, meth_or_attr_name, args, kwargs))
-  File &quot;/opt/python/3.6.2/lib/python3.6/multiprocessing/connection.py&quot;, line 206, in send
-    self._send_bytes(_ForkingPickler.dumps(obj))
-  File &quot;/opt/python/3.6.2/lib/python3.6/multiprocessing/connection.py&quot;, line 404, in _send_bytes
-    self._send(header + buf)
-  File &quot;/opt/python/3.6.2/lib/python3.6/multiprocessing/connection.py&quot;, line 368, in _send
-    n = write(self._handle, buf)
-OSError: [Errno 9] Bad file descriptor
 </system-err>
     </testcase>
   </testsuite>
