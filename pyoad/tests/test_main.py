@@ -16,16 +16,19 @@ THIS_DIR = path.dirname(path.abspath(__file__))
 
 
 def test_mini_instance_def():
+    """ Simple test with daemon-side instantiation of a io.StringIO """
     daemon_strio = ObjectDaemonProxy(InstanceDefinition('io', 'StringIO', 'hello, world!'))
     print(daemon_strio.getvalue())
 
 
 def test_mini_instance_def_primitives():
+    """ Simple test with daemon-side instantiation of a primitive (a str) """
     daemon_str = ObjectDaemonProxy(InstanceDefinition('builtins', 'str', 'hello, world!'))
     print(daemon_str)
 
 
 def test_mini_instance():
+    """ Simple test with client-side instantiation of a str and transfer to the daemon """
     daemon_strio = ObjectDaemonProxy('hello, world!')
     print(daemon_strio)  # str then repr
     print('Explicit str required: ' + str(daemon_strio))  # str
@@ -72,6 +75,7 @@ def _create_temporary_venv(env_name: str, py_version: str):
 
 
 def test_main():
+    """ Spawns a io.StringIO daemon in a temporary venv and asserts that it behaves exactly like a local instance """
 
     # --create temporary new python environment
     python_exe = _create_temporary_venv('tmp', '3.5.0')
