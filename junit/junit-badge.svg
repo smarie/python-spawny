@@ -6,10 +6,10 @@
 <head>
 
 
-<meta http-equiv="set-cookie" content="cf_use_ob=0; expires=Fri, 04-Aug-17 15:04:56 GMT; path=/">
+<meta http-equiv="set-cookie" content="cf_use_ob=0; expires=Fri, 04-Aug-17 15:07:35 GMT; path=/">
 
 
-<title>img.shields.io | 521: Web server is down</title>
+<title>img.shields.io | 524: A timeout occurred</title>
 <meta charset="UTF-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
@@ -32,10 +32,10 @@
         <div class="cf-wrapper cf-error-overview">
             <h1>
               <span class="cf-error-type" data-translate="error">Error</span>
-              <span class="cf-error-code">521</span>
-              <small class="heading-ray-id">Ray ID: 3892688e3e9a71cd &bull; 2017-08-04 15:04:26 UTC</small>
+              <span class="cf-error-code">524</span>
+              <small class="heading-ray-id">Ray ID: 38926a2be95154da &bull; 2017-08-04 15:07:05 UTC</small>
             </h1>
-            <h2 class="cf-subheadline" data-translate="error_desc">Web server is down</h2>
+            <h2 class="cf-subheadline" data-translate="error_desc">A timeout occurred</h2>
         </div><!-- /.error-overview -->
 
         <div class="cf-section cf-highlight cf-status-display">
@@ -80,25 +80,25 @@
             <div class="cf-columns two">
                 <div class="cf-column">
                     <h2 data-translate="what_happened">What happened?</h2>
-                    <p data-translate="not_returning_connection">The web server is not returning a connection. As a result, the web page is not displaying.</p>
+                    <p data-translate="origin_timed_out">The origin web server timed out responding to this request.</p>
                 </div>
 
                 <div class="cf-column">
                     <h2 data-translate="what_can_i_do">What can I do?</h2>
-                          <h5 data-translate="if_website_visitor">If you are a visitor of this website:</h5>
+                          <h5 data-translate="if_website_visitor">If you're a visitor of this website:</h5>
       <p data-translate="try_again_in_a_few">Please try again in a few minutes.</p>
 
-      <h5 data-translate="if_website_owner">If you are the owner of this website:</h5>
-      <p><span data-translate="521_owner_desc">Contact your hosting provider letting them know your web server is not responding.</span> <a data-translate="addtl_troubleshooting" href="https://support.cloudflare.com/hc/en-us/articles/200171916-Error-521">Additional troubleshooting information</a>.</p>
+      <h5 data-translate="if_website_owner">If you're the owner of this website:</h5>
+      <p><span data-translate="524_owner_desc">The connection to the origin web server was made, but the origin web server timed out before responding. The likely cause is an overloaded background task, database or application, stressing the resources on your web server. To resolve, please work with your hosting provider or web development team to free up resources for your database or overloaded application.</span> <a href="https://support.cloudflare.com/hc/en-us/articles/200171926-Error-524" data-translate="addtl_troubleshooting">Additional troubleshooting information here.</a></p>
                 </div>
             </div>
         </div><!-- /.section -->
 
         <div class="cf-error-footer cf-wrapper">
   <p>
-    <span class="cf-footer-item">Cloudflare Ray ID: <strong>3892688e3e9a71cd</strong></span>
+    <span class="cf-footer-item">Cloudflare Ray ID: <strong>38926a2be95154da</strong></span>
     <span class="cf-footer-separator">&bull;</span>
-    <span class="cf-footer-item"><span data-translate="your_ip">Your IP</span>: 35.192.124.185</span>
+    <span class="cf-footer-item"><span data-translate="your_ip">Your IP</span>: 35.192.149.22</span>
     <span class="cf-footer-separator">&bull;</span>
     <span class="cf-footer-item"><span data-translate="performance_security_by">Performance &amp; security by</span> <a data-orig-proto="https" data-orig-ref="www.cloudflare.com/5xx-error-landing?utm_source=error_footer" id="brand_link" target="_blank">Cloudflare</a></span>
     
