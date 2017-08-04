@@ -106,5 +106,8 @@ ENV/
 # Mkdocs
 site/
 
-tmp_venv/
+# travis CI
 github_travis_rsa*
+reports
+
+tmp_venv/

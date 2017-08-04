@@ -1,0 +1,5 @@
+# requirements needed to generate the reports
+requests
+xunitparser
+coverage
+pylint
