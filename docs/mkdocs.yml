@@ -3,6 +3,7 @@ site_name: python-object-as-daemon
 repo_url: https://github.com/smarie/python-object-as-daemon
 pages:
     - Home: index.md
+    - Changelog: changelog.md
 theme: material  # readthedocs  mkdocs
 
 markdown_extensions:
