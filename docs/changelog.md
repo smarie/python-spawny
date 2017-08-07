@@ -1,5 +1,3 @@
-## Changelog
-
 ### 1.0.2 Better travis integration
 
  * added test reports generation
