@@ -1,30 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="pytest" skips="0" tests="4" time="0.253"><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="17" name="test_mini_instance_def" time="0.017777442932128906"><system-out>Replacing methods [&apos;__enter__&apos;, &apos;__exit__&apos;, &apos;__getstate__&apos;, &apos;__next__&apos;, &apos;__setstate__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="pytest" skips="0" tests="4" time="0.252"><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="17" name="test_mini_instance_def" time="0.018970966339111328"><system-out>Replacing methods [&apos;__enter__&apos;, &apos;__exit__&apos;, &apos;__getstate__&apos;, &apos;__next__&apos;, &apos;__setstate__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
 Object proxy spawning Child process for object daemon
 Object proxy asking daemon to check if this is a method or an attribute: getvalue
-[4704] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
+[4641] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
 Object proxy received response from daemon : getvalue is a method
 Object proxy asking daemon to execute method: getvalue
 Object proxy received response from daemon : hello, world!
 hello, world!
 Object proxy asking daemon to exit
-[4704] Object daemon  was asked to exit - closing communication connection
-[4704] Object daemon  terminating
+[4641] Object daemon  was asked to exit - closing communication connection
+[4641] Object daemon  terminating
 Object proxy terminated successfully
-</system-out></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="23" name="test_mini_instance_def_primitives" time="0.010740041732788086"><system-out>Replacing methods [&apos;__add__&apos;, &apos;__getnewargs__&apos;, &apos;__mod__&apos;, &apos;__mul__&apos;, &apos;__rmod__&apos;, &apos;__rmul__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
+</system-out></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="23" name="test_mini_instance_def_primitives" time="0.013067245483398438"><system-out>Replacing methods [&apos;__add__&apos;, &apos;__getnewargs__&apos;, &apos;__mod__&apos;, &apos;__mul__&apos;, &apos;__rmod__&apos;, &apos;__rmul__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
 Object proxy spawning Child process for object daemon
 Object proxy asking daemon to check if this is a method or an attribute: __str__
-[4706] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
+[4643] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
 Object proxy received response from daemon : __str__ is a method
 Object proxy asking daemon to execute method: __str__
 Object proxy received response from daemon : hello, world!
 hello, world!
-</system-out></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="29" name="test_mini_instance" time="0.019185304641723633"><system-out>Replacing methods [&apos;__add__&apos;, &apos;__getnewargs__&apos;, &apos;__mod__&apos;, &apos;__mul__&apos;, &apos;__rmod__&apos;, &apos;__rmul__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
+</system-out></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="29" name="test_mini_instance" time="0.018556594848632812"><system-out>Replacing methods [&apos;__add__&apos;, &apos;__getnewargs__&apos;, &apos;__mod__&apos;, &apos;__mul__&apos;, &apos;__rmod__&apos;, &apos;__rmul__&apos;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
 Object proxy spawning Child process for object daemon
 Object proxy asking daemon to check if this is a method or an attribute: __str__
 Object proxy asking daemon to exit
-[4706] Object daemon  was asked to exit - closing communication connection
-[4706] Object daemon  terminating
-[4708] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
+[4643] Object daemon  was asked to exit - closing communication connection
+[4643] Object daemon  terminating
+[4645] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
 Object proxy received response from daemon : __str__ is a method
 Object proxy asking daemon to execute method: __str__
 Object proxy received response from daemon : hello, world!
@@ -56,7 +56,7 @@ Traceback (most recent call last):
   File &quot;/opt/python/3.5.3/lib/python3.5/multiprocessing/process.py&quot;, line 119, in join
     assert self._parent_pid == os.getpid(), &apos;can only join a child process&apos;
 AssertionError: can only join a child process
-</system-err></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="76" name="test_main" time="0.06754946708679199"><system-out>Creating Test virtual environment with conda: conda create --prefix /home/travis/build/smarie/python-object-as-daemon/tmp_venv/tmp python=3.5.0 --yes
+</system-err></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="76" name="test_main" time="0.06116747856140137"><system-out>Creating Test virtual environment with conda: conda create --prefix /home/travis/build/smarie/python-object-as-daemon/tmp_venv/tmp python=3.5.0 --yes
 Conda does not seem to be available. Creating Test virtual environment with venv (selected version number will be ignored): python - m venv /home/travis/build/smarie/python-object-as-daemon/tmp_venv/tmp
 Test virtual environment created
 Test virtual environment is venv
@@ -66,12 +66,12 @@ Replacing methods [&apos;__enter__&apos;, &apos;__exit__&apos;, &apos;__getstate
 Object proxy asking daemon to exit
 Object proxy terminated successfully
 Object proxy asking daemon to exit
-[4708] Object daemon  was asked to exit - closing communication connection
-[4708] Object daemon  terminating
+[4645] Object daemon  was asked to exit - closing communication connection
+[4645] Object daemon  terminating
 Object proxy terminated successfully
 Object proxy spawning Child process for object daemon
 Object proxy asking daemon to check if this is a method or an attribute: getvalue
-[4712] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
+[4649] Object daemon started in : /home/travis/virtualenv/python3.5.3/bin/python
 Object proxy received response from daemon : getvalue is a method
 Object proxy asking daemon to execute method: getvalue
 Object proxy received response from daemon : str
@@ -104,7 +104,7 @@ Object proxy received error from daemon : I/O operation on closed file
 tearing down
 Object proxy asking daemon to exit
 Object proxy asking daemon to execute method: __repr__
-process psutil.Process(pid=4712 (terminated)) terminated with exit code -15
+process psutil.Process(pid=4649 (terminated)) terminated with exit code -15
 DONE
 </system-out><system-err>Unknown option: - 
 usage: python [option] ... [-c cmd | -m mod | file | -] [arg] ...
