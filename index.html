@@ -12,7 +12,7 @@
       
         <link rel="shortcut icon" href="./assets/images/favicon.png">
       
-      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.8.0">
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.8.1">
     
     
       
@@ -528,7 +528,11 @@ hello
 
 
 <p>Otherwise you may also wish to provide your own logger:</p>
-<div class="codehilite"><pre><span></span><span class="n">daemon</span> <span class="o">=</span> <span class="n">ObjectDaemonProxy</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">MyLogger</span><span class="p">())</span>
+<div class="codehilite"><pre><span></span><span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span><span class="p">,</span> <span class="n">FileHandler</span><span class="p">,</span> <span class="n">INFO</span>
+<span class="n">my_logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;mine&#39;</span><span class="p">)</span>
+<span class="n">my_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">FileHandler</span><span class="p">(</span><span class="s1">&#39;hello.log&#39;</span><span class="p">))</span>
+<span class="n">my_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">daemon</span> <span class="o">=</span> <span class="n">ObjectDaemonProxy</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">my_logger</span><span class="p">)</span>
 </pre></div>
 
 
@@ -601,7 +605,7 @@ hello
       
     </div>
     
-      <script src="./assets/javascripts/application-1d6ee6ee6c.js"></script>
+      <script src="./assets/javascripts/application-6940329b9f.js"></script>
       
       
       <script>app.initialize({url:{base:"."}})</script>
