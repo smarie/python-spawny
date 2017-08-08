@@ -108,7 +108,11 @@ logging.getLogger('pyoad').setLevel(logging.DEBUG)
 Otherwise you may also wish to provide your own logger:
 
 ```python
-daemon = ObjectDaemonProxy(..., logger = MyLogger())
+from logging import getLogger, FileHandler, INFO
+my_logger = getLogger('mine')
+my_logger.addHandler(FileHandler('hello.log'))
+my_logger.setLevel(INFO)
+daemon = ObjectDaemonProxy(..., logger = my_logger)
 ```
 
 
