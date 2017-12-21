@@ -130,7 +130,7 @@ Some smaller projects from the community:
 * [dproxify](https://pypi.python.org/pypi/dproxify)
 
 
-*Do you like this library ? You might also like [these](https://github.com/smarie?utf8=%E2%9C%93&tab=repositories&q=&type=&language=python)* 
+*Do you like this library ? You might also like [my other python libraries](https://github.com/smarie?utf8=%E2%9C%93&tab=repositories&q=&type=&language=python)* 
 
 ## Want to contribute ?
 

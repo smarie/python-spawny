@@ -36,10 +36,11 @@ install:
   - pip install -r ci_tools/requirements-doc.txt
   - pip install codecov    # https://github.com/codecov/example-python. This is specific to travis integration
 # - pip install coveralls  # this is an alternative to codecov
-  - pip install .
 
 script:
-#  - coverage run tests.py
+  - pip install .
+  - python -c "import os; os.chdir('..'); import pyoad"
+  #  - coverage run tests.py
   - pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html --cov-report term-missing --cov=./pyoad -v pyoad/tests/
 
 after_success:
