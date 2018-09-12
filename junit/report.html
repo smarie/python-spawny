@@ -85,9 +85,10 @@ function add_collapse() {
 
     // Add show/hide link to each result
     find_all('.col-result').forEach(function(elem) {
+        var collapsed = get_query_parameter('collapsed') || 'Passed';
         var extras = elem.parentNode.nextElementSibling;
         var expandcollapse = document.createElement("span");
-        if (elem.innerHTML === 'Passed') {
+        if (collapsed.includes(elem.innerHTML)) {
             extras.classList.add("collapsed");
             expandcollapse.classList.add("expander");
         } else {
@@ -103,6 +104,11 @@ function add_collapse() {
             }
         });
     })
+}
+
+function get_query_parameter(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 
 function init () {
@@ -228,7 +234,8 @@ function filter_table(elem) {
     not_found_message.hidden = !all_rows_hidden;
 }
 </script>
-    <p>Report generated on 21-Dec-2017 at 12:09:12 by<a href="https://pypi.python.org/pypi/pytest-html"> pytest-html</a> v1.16.0</p>
+    <h1>report.html</h1>
+    <p>Report generated on 12-Sep-2018 at 08:13:53 by<a href="https://pypi.python.org/pypi/pytest-html"> pytest-html</a> v1.19.0</p>
     <h2>Environment</h2>
     <table id="environment">
       <tr>
@@ -239,43 +246,43 @@ function filter_table(elem) {
         <td>/usr/lib/jvm/java-8-oracle</td></tr>
       <tr>
         <td>Packages</td>
-        <td>{&apos;py&apos;: &apos;1.4.34&apos;, &apos;pytest&apos;: &apos;3.2.1&apos;, &apos;pluggy&apos;: &apos;0.4.0&apos;}</td></tr>
+        <td>{&apos;pluggy&apos;: &apos;0.7.1&apos;, &apos;py&apos;: &apos;1.5.4&apos;, &apos;pytest&apos;: &apos;3.7.1&apos;}</td></tr>
       <tr>
         <td>Platform</td>
         <td>Linux-4.4.0-101-generic-x86_64-with-debian-jessie-sid</td></tr>
       <tr>
         <td>Plugins</td>
-        <td>{&apos;logging&apos;: &apos;2015.11.4&apos;, &apos;html&apos;: &apos;1.16.0&apos;, &apos;metadata&apos;: &apos;1.5.1&apos;, &apos;cov&apos;: &apos;2.5.1&apos;}</td></tr>
+        <td>{&apos;html&apos;: &apos;1.19.0&apos;, &apos;cov&apos;: &apos;2.6.0&apos;, &apos;metadata&apos;: &apos;1.7.0&apos;}</td></tr>
       <tr>
         <td>Python</td>
-        <td>3.5.4</td></tr>
+        <td>3.5.6</td></tr>
       <tr>
         <td>TRAVIS_BRANCH</td>
         <td>master</td></tr>
       <tr>
         <td>TRAVIS_BUILD_ID</td>
-        <td>319670351</td></tr>
+        <td>427570974</td></tr>
       <tr>
         <td>TRAVIS_BUILD_NUMBER</td>
-        <td>51</td></tr>
+        <td>52</td></tr>
       <tr>
         <td>TRAVIS_COMMIT</td>
-        <td>147d7485a2839e4314b0cb2812b41439eafdda5d</td></tr>
+        <td>a534403470d8cc81451f62b89b76d851ccb80d7d</td></tr>
       <tr>
         <td>TRAVIS_COMMIT_MESSAGE</td>
-        <td>Minor edit about the authors&apos; other libraries. Improved travis script to add an import test in build.</td></tr>
+        <td>Hardcoded mkdocs and mkdocs-material versions so that doc builds correctly.</td></tr>
       <tr>
         <td>TRAVIS_COMMIT_RANGE</td>
-        <td>8f4dc5285fbc...147d7485a283</td></tr>
+        <td>147d7485a283...a534403470d8</td></tr>
       <tr>
         <td>TRAVIS_EVENT_TYPE</td>
         <td>push</td></tr>
       <tr>
         <td>TRAVIS_JOB_ID</td>
-        <td>319670352</td></tr>
+        <td>427570975</td></tr>
       <tr>
         <td>TRAVIS_JOB_NUMBER</td>
-        <td>51.1</td></tr>
+        <td>52.1</td></tr>
       <tr>
         <td>TRAVIS_OS_NAME</td>
         <td>linux</td></tr>
@@ -289,7 +296,7 @@ function filter_table(elem) {
         <td>TRAVIS_SUDO</td>
         <td>true</td></tr></table>
     <h2>Summary</h2>
-    <p>4 tests ran in 0.31 seconds. </p>
+    <p>4 tests ran in 0.29 seconds. </p>
     <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">4 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
     <h2>Results</h2>
     <table id="results-table">
@@ -309,17 +316,11 @@ function filter_table(elem) {
           <th>pyoad/tests/test_main.py</th>
           <td>test_mini_instance_def</td>
           <td> Simple test with daemon-side instantiation of a io.StringIO </td>
-          <td class="col-duration">0.03</td>
-          <td><a href="https://codecov.io/gh/smarie/python-object-as-daemon/src/147d7485a2839e4314b0cb2812b41439eafdda5d/pyoad/tests/test_main.py#L17">source</a></td></tr>
+          <td class="col-duration">0.02</td>
+          <td><a href="https://codecov.io/gh/smarie/python-object-as-daemon/src/a534403470d8cc81451f62b89b76d851ccb80d7d/pyoad/tests/test_main.py#L17">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>Replacing methods [&#x27;__enter__&#x27;, &#x27;__exit__&#x27;, &#x27;__getstate__&#x27;, &#x27;__next__&#x27;, &#x27;__setstate__&#x27;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
-Object proxy spawning Child process for object daemon
-Object proxy asking daemon to check if this is a method or an attribute: getvalue
-[5537] Object daemon started in : /home/travis/virtualenv/python3.5.4/bin/python
-Object proxy received response from daemon : getvalue is a method
-Object proxy asking daemon to execute method: getvalue
-Object proxy received response from daemon : hello, world!
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>[6161] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
 hello, world!
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -329,16 +330,10 @@ hello, world!
           <td>test_mini_instance_def_primitives</td>
           <td> Simple test with daemon-side instantiation of a primitive (a str) </td>
           <td class="col-duration">0.02</td>
-          <td><a href="https://codecov.io/gh/smarie/python-object-as-daemon/src/147d7485a2839e4314b0cb2812b41439eafdda5d/pyoad/tests/test_main.py#L23">source</a></td></tr>
+          <td><a href="https://codecov.io/gh/smarie/python-object-as-daemon/src/a534403470d8cc81451f62b89b76d851ccb80d7d/pyoad/tests/test_main.py#L23">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>Replacing methods [&#x27;__add__&#x27;, &#x27;__getnewargs__&#x27;, &#x27;__mod__&#x27;, &#x27;__mul__&#x27;, &#x27;__rmod__&#x27;, &#x27;__rmul__&#x27;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
-Object proxy spawning Child process for object daemon
-Object proxy asking daemon to check if this is a method or an attribute: __str__
-[5539] Object daemon started in : /home/travis/virtualenv/python3.5.4/bin/python
-Object proxy received response from daemon : __str__ is a method
-Object proxy asking daemon to execute method: __str__
-Object proxy received response from daemon : hello, world!
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>[6163] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
 hello, world!
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
@@ -347,40 +342,27 @@ hello, world!
           <th>pyoad/tests/test_main.py</th>
           <td>test_mini_instance</td>
           <td> Simple test with client-side instantiation of a str and transfer to the daemon </td>
-          <td class="col-duration">0.03</td>
-          <td><a href="https://codecov.io/gh/smarie/python-object-as-daemon/src/147d7485a2839e4314b0cb2812b41439eafdda5d/pyoad/tests/test_main.py#L29">source</a></td></tr>
+          <td class="col-duration">0.02</td>
+          <td><a href="https://codecov.io/gh/smarie/python-object-as-daemon/src/a534403470d8cc81451f62b89b76d851ccb80d7d/pyoad/tests/test_main.py#L29">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
-            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>Object proxy asking daemon to exit
-[5539] Object daemon  was asked to exit - closing communication connection
-[5539] Object daemon  terminating
-Object proxy terminated successfully
-Replacing methods [&#x27;__add__&#x27;, &#x27;__getnewargs__&#x27;, &#x27;__mod__&#x27;, &#x27;__mul__&#x27;, &#x27;__rmod__&#x27;, &#x27;__rmul__&#x27;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
-Object proxy spawning Child process for object daemon
-Object proxy asking daemon to check if this is a method or an attribute: __str__
-[5541] Object daemon started in : /home/travis/virtualenv/python3.5.4/bin/python
-Object proxy received response from daemon : __str__ is a method
-Object proxy asking daemon to execute method: __str__
-Object proxy received response from daemon : hello, world!
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>[6163] Object daemon  was asked to exit - closing communication connection
+[6163] Object daemon  terminating
+[6165] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
 hello, world!
-Object proxy asking daemon to check if this is a method or an attribute: __str__
-Object proxy received response from daemon : __str__ is a method
-Object proxy asking daemon to execute method: __str__
-Object proxy received response from daemon : hello, world!
 Explicit str required: hello, world!
-Object proxy asking daemon to check if this is a method or an attribute: __str__
-Object proxy received response from daemon : __str__ is a method
-Object proxy asking daemon to execute method: __str__
-Object proxy received response from daemon : hello, world!
 With str formatting:  hello, world!  
-Object proxy asking daemon to execute method: __repr__
-Object proxy received response from daemon : &#x27;hello, world!&#x27;
 Explicit repr: ObjectDaemonProxy&lt;&#x27;hello, world!&#x27;&gt;
-Object proxy asking daemon to check if this is a method or an attribute: __getitem__
-Object proxy received response from daemon : __getitem__ is a method
-Object proxy asking daemon to execute method: __getitem__
-Object proxy received response from daemon : hello
 Subscript: hello
+----------------------------- Captured stderr call -----------------------------<br/>Exception ignored in: &lt;bound method ObjectDaemonProxy.__del__ of ObjectDaemonProxy&lt;not started&gt;&gt;
+Traceback (most recent call last):
+  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 271, in __del__
+    self.terminate_daemon()
+  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 287, in terminate_daemon
+    self.p.join(timeout=10000)
+  File &quot;/opt/python/3.5.6/lib/python3.5/multiprocessing/process.py&quot;, line 122, in join
+    assert self._parent_pid == os.getpid(), &#x27;can only join a child process&#x27;
+AssertionError: can only join a child process
 </div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
@@ -388,8 +370,8 @@ Subscript: hello
           <th>pyoad/tests/test_main.py</th>
           <td>test_main</td>
           <td> Spawns a io.StringIO daemon in a temporary venv and asserts that it behaves exactly like a local instance </td>
-          <td class="col-duration">0.04</td>
-          <td><a href="https://codecov.io/gh/smarie/python-object-as-daemon/src/147d7485a2839e4314b0cb2812b41439eafdda5d/pyoad/tests/test_main.py#L76">source</a></td></tr>
+          <td class="col-duration">0.03</td>
+          <td><a href="https://codecov.io/gh/smarie/python-object-as-daemon/src/a534403470d8cc81451f62b89b76d851ccb80d7d/pyoad/tests/test_main.py#L76">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
             <div class="log">----------------------------- Captured stdout call -----------------------------<br/>Creating Test virtual environment with conda: conda create --prefix /home/travis/build/smarie/python-object-as-daemon/tmp_venv/tmp python=3.5.0 --yes
@@ -398,52 +380,34 @@ Test virtual environment created
 Test virtual environment is venv
 local test
 daemon test
-Replacing methods [&#x27;__enter__&#x27;, &#x27;__exit__&#x27;, &#x27;__getstate__&#x27;, &#x27;__next__&#x27;, &#x27;__setstate__&#x27;] on instance ObjectDaemonProxy&lt;not started&gt; by explicit calls to __getattr__
-Object proxy spawning Child process for object daemon
-Object proxy asking daemon to check if this is a method or an attribute: getvalue
-Object proxy asking daemon to exit
-[5541] Object daemon  was asked to exit - closing communication connection
-[5541] Object daemon  terminating
-[5545] Object daemon started in : /home/travis/virtualenv/python3.5.4/bin/python
-Object proxy received response from daemon : getvalue is a method
-Object proxy asking daemon to execute method: getvalue
-Object proxy received response from daemon : str
-hello
-Object proxy asking daemon to check if this is a method or an attribute: write
-Object proxy received response from daemon : write is a method
-Object proxy asking daemon to execute method: write
-Object proxy received response from daemon : 2
-Object proxy asking daemon to check if this is a method or an attribute: getvalue
-Object proxy received response from daemon : getvalue is a method
-Object proxy asking daemon to execute method: getvalue
-Object proxy received response from daemon : **r
-hello
-Object proxy asking daemon to check if this is a method or an attribute: seek
-Object proxy received response from daemon : seek is a method
-Object proxy asking daemon to execute method: seek
-Object proxy received response from daemon : 0
-Object proxy asking daemon to check if this is a method or an attribute: readlines
-Object proxy received response from daemon : readlines is a method
-Object proxy asking daemon to execute method: readlines
-Object proxy received response from daemon : [&#x27;**r\n&#x27;, &#x27;hello&#x27;]
-Object proxy asking daemon to check if this is a method or an attribute: close
-Object proxy received response from daemon : close is a method
-Object proxy asking daemon to execute method: close
-Object proxy received response from daemon : None
-Object proxy asking daemon to check if this is a method or an attribute: getvalue
-Object proxy received response from daemon : getvalue is a method
-Object proxy asking daemon to execute method: getvalue
-Object proxy received error from daemon : I/O operation on closed file
+[6165] Object daemon  was asked to exit - closing communication connection
+[6165] Object daemon  terminating
+[6169] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
 ----------------------------- Captured stderr call -----------------------------<br/>Unknown option: - 
 usage: python [option] ... [-c cmd | -m mod | file | -] [arg] ...
 Try `python -h&#x27; for more information.
+Exception ignored in: &lt;object repr() failed&gt;
+Traceback (most recent call last):
+  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 271, in __del__
+    self.terminate_daemon()
+  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 279, in terminate_daemon
+    self.remote_call_using_pipe(EXIT_CMD)
+  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 242, in remote_call_using_pipe
+    self.parent_conn.send((cmd_type, meth_or_attr_name, args, kwargs))
+  File &quot;/opt/python/3.5.6/lib/python3.5/multiprocessing/connection.py&quot;, line 206, in send
+    self._send_bytes(ForkingPickler.dumps(obj))
+  File &quot;/opt/python/3.5.6/lib/python3.5/multiprocessing/connection.py&quot;, line 404, in _send_bytes
+    self._send(header + buf)
+  File &quot;/opt/python/3.5.6/lib/python3.5/multiprocessing/connection.py&quot;, line 368, in _send
+    n = write(self._handle, buf)
+BrokenPipeError: [Errno 32] Broken pipe
 Exception ignored in: &lt;bound method ObjectDaemonProxy.__del__ of ObjectDaemonProxy&lt;not started&gt;&gt;
 Traceback (most recent call last):
   File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 271, in __del__
     self.terminate_daemon()
   File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 287, in terminate_daemon
     self.p.join(timeout=10000)
-  File &quot;/opt/python/3.5.4/lib/python3.5/multiprocessing/process.py&quot;, line 122, in join
+  File &quot;/opt/python/3.5.6/lib/python3.5/multiprocessing/process.py&quot;, line 122, in join
     assert self._parent_pid == os.getpid(), &#x27;can only join a child process&#x27;
 AssertionError: can only join a child process
 </div></td></tr></tbody></table></body></html>
