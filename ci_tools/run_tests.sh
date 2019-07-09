@@ -16,9 +16,9 @@ if [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then
    # full
    # Run tests with "python -m pytest" to use the correct version of pytest
    echo -e "\n\n****** Running tests ******\n\n"
-   coverage run --source spawner -m pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html -v spawner/tests/
+   coverage run --source spawner -m pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html -s -v spawner/tests/
    # buggy
-   # python -m pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html --cov-report term-missing --cov=./spawner -v spawner/tests/
+   # python -m pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html --cov-report term-missing --cov=./spawner -s -v spawner/tests/
 else
    # faster - skip coverage and html report but keep junit (because used in validity threshold)
     echo -e "\n\n****** Running tests******\n\n"
