@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from spawner import ScriptDefinition, DaemonProxy
 
 
@@ -14,6 +16,9 @@ foo = "hello world"
 """
 
     remote_script = DaemonProxy(ScriptDefinition(script))
-    remote_odct = remote_script.odct
 
-    print(remote_odct)
+    try:
+        assert remote_script.odct == OrderedDict([('a', 1)])
+        assert remote_script.foo == "hello world"
+    finally:
+        remote_script.terminate_daemon()

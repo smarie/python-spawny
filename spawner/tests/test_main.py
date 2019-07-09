@@ -12,8 +12,11 @@ from spawner import DaemonProxy, InstanceDefinition  # init_mp_context
 THIS_DIR = path.dirname(path.abspath(__file__))
 
 
-# --init multiprocessing context. not sure it is still needed
-# init_mp_context()
+# @pytest.fixture(scope='session', autouse=True)
+# def multiprocessing_fixture():
+#     # init the multiprocessing engine so that "spawn" is the default way to kill a process
+#     init_mp_context()
+#     yield
 
 
 def test_mini_instance_def():
@@ -66,6 +69,7 @@ def _create_temporary_venv(env_name: str, py_version: str):
         try:
             cmd = ['conda', 'create', '--prefix', '"%s"' % env_path, 'python=%s' % py_version, '--yes']
             print('Creating Test virtual environment with conda: ' + ' '.join(cmd))
+            # NOTE: conda needs to be on the path !
             subprocess.run(cmd)
             print('Test virtual environment created')
         except:
