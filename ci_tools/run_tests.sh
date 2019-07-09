@@ -22,5 +22,5 @@ if [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then
 else
    # faster - skip coverage and html report but keep junit (because used in validity threshold)
     echo -e "\n\n****** Running tests******\n\n"
-    python -m pytest --junitxml=reports/junit/junit.xml -v spawner/tests/
+    python -m pytest --junitxml=reports/junit/junit.xml -s -v spawner/tests/
 fi
