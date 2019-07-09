@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="pytest" skips="0" tests="4" time="0.303"><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="17" name="test_mini_instance_def" time="0.027447938919067383"><system-out>[6051] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="0" failures="0" name="pytest" skips="0" tests="4" time="0.340"><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="17" name="test_mini_instance_def" time="0.031217575073242188"><system-out>[6633] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
 hello, world!
-</system-out></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="23" name="test_mini_instance_def_primitives" time="0.022385120391845703"><system-out>[6053] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
+</system-out></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="23" name="test_mini_instance_def_primitives" time="0.026790618896484375"><system-out>[6635] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
 hello, world!
-</system-out></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="29" name="test_mini_instance" time="0.025670766830444336"><system-out>[6053] Object daemon  was asked to exit - closing communication connection
-[6053] Object daemon  terminating
-[6055] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
+</system-out></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="29" name="test_mini_instance" time="0.028875112533569336"><system-out>[6635] Object daemon  was asked to exit - closing communication connection
+[6635] Object daemon  terminating
+[6637] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
 hello, world!
 Explicit str required: hello, world!
 With str formatting:  hello, world!  
@@ -12,37 +12,37 @@ Explicit repr: ObjectDaemonProxy&lt;&apos;hello, world!&apos;&gt;
 Subscript: hello
 </system-out><system-err>Exception ignored in: &lt;bound method ObjectDaemonProxy.__del__ of ObjectDaemonProxy&lt;not started&gt;&gt;
 Traceback (most recent call last):
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 271, in __del__
+  File &quot;/home/travis/build/smarie/python-spawner/pyoad/main.py&quot;, line 271, in __del__
     self.terminate_daemon()
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 287, in terminate_daemon
+  File &quot;/home/travis/build/smarie/python-spawner/pyoad/main.py&quot;, line 287, in terminate_daemon
     self.p.join(timeout=10000)
   File &quot;/opt/python/3.5.6/lib/python3.5/multiprocessing/process.py&quot;, line 122, in join
     assert self._parent_pid == os.getpid(), &apos;can only join a child process&apos;
 AssertionError: can only join a child process
-</system-err></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="76" name="test_main" time="0.06649327278137207"><system-out>Creating Test virtual environment with conda: conda create --prefix /home/travis/build/smarie/python-object-as-daemon/tmp_venv/tmp python=3.5.0 --yes
-Conda does not seem to be available. Creating Test virtual environment with venv (selected version number will be ignored): python - m venv /home/travis/build/smarie/python-object-as-daemon/tmp_venv/tmp
+</system-err></testcase><testcase classname="pyoad.tests.test_main" file="pyoad/tests/test_main.py" line="76" name="test_main" time="0.06683659553527832"><system-out>Creating Test virtual environment with conda: conda create --prefix /home/travis/build/smarie/python-spawner/tmp_venv/tmp python=3.5.0 --yes
+Conda does not seem to be available. Creating Test virtual environment with venv (selected version number will be ignored): python - m venv /home/travis/build/smarie/python-spawner/tmp_venv/tmp
 Test virtual environment created
 Test virtual environment is venv
 local test
 daemon test
-[6055] Object daemon  was asked to exit - closing communication connection
-[6055] Object daemon  terminating
-[6059] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
+[6637] Object daemon  was asked to exit - closing communication connection
+[6637] Object daemon  terminating
+[6641] Object daemon started in : /home/travis/virtualenv/python3.5.6/bin/python
 tearing down
-[6051] Object daemon  was asked to exit - closing communication connection
-[6051] Object daemon  terminating
-process psutil.Process(pid=6059, status=&apos;terminated&apos;) terminated with exit code -15
+[6633] Object daemon  was asked to exit - closing communication connection
+[6633] Object daemon  terminating
+process psutil.Process(pid=6641, status=&apos;terminated&apos;) terminated with exit code -15
 DONE
 </system-out><system-err>Unknown option: - 
 usage: python [option] ... [-c cmd | -m mod | file | -] [arg] ...
 Try `python -h&apos; for more information.
 Exception ignored in: &lt;object repr() failed&gt;
 Traceback (most recent call last):
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 271, in __del__
+  File &quot;/home/travis/build/smarie/python-spawner/pyoad/main.py&quot;, line 271, in __del__
     self.terminate_daemon()
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 279, in terminate_daemon
+  File &quot;/home/travis/build/smarie/python-spawner/pyoad/main.py&quot;, line 279, in terminate_daemon
     self.remote_call_using_pipe(EXIT_CMD)
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 242, in remote_call_using_pipe
+  File &quot;/home/travis/build/smarie/python-spawner/pyoad/main.py&quot;, line 242, in remote_call_using_pipe
     self.parent_conn.send((cmd_type, meth_or_attr_name, args, kwargs))
   File &quot;/opt/python/3.5.6/lib/python3.5/multiprocessing/connection.py&quot;, line 206, in send
     self._send_bytes(ForkingPickler.dumps(obj))
@@ -53,11 +53,11 @@ Traceback (most recent call last):
 BrokenPipeError: [Errno 32] Broken pipe
 Exception ignored in: &lt;object repr() failed&gt;
 Traceback (most recent call last):
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 271, in __del__
+  File &quot;/home/travis/build/smarie/python-spawner/pyoad/main.py&quot;, line 271, in __del__
     self.terminate_daemon()
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 279, in terminate_daemon
+  File &quot;/home/travis/build/smarie/python-spawner/pyoad/main.py&quot;, line 279, in terminate_daemon
     self.remote_call_using_pipe(EXIT_CMD)
-  File &quot;/home/travis/build/smarie/python-object-as-daemon/pyoad/main.py&quot;, line 242, in remote_call_using_pipe
+  File &quot;/home/travis/build/smarie/python-spawner/pyoad/main.py&quot;, line 242, in remote_call_using_pipe
     self.parent_conn.send((cmd_type, meth_or_attr_name, args, kwargs))
   File &quot;/opt/python/3.5.6/lib/python3.5/multiprocessing/connection.py&quot;, line 206, in send
     self._send_bytes(ForkingPickler.dumps(obj))
