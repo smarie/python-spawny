@@ -1,29 +1,25 @@
-# python-object-as-daemon (pyoad)
+# spawner
 
-[![Build Status](https://travis-ci.org/smarie/python-object-as-daemon.svg?branch=master)](https://travis-ci.org/smarie/python-object-as-daemon) [![Tests Status](https://smarie.github.io/python-object-as-daemon/junit/junit-badge.svg?dummy=8484744)](https://smarie.github.io/python-object-as-daemon/junit/report.html) [![codecov](https://codecov.io/gh/smarie/python-object-as-daemon/branch/master/graph/badge.svg)](https://codecov.io/gh/smarie/python-object-as-daemon) [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://smarie.github.io/python-object-as-daemon/) [![PyPI](https://img.shields.io/badge/PyPI-pyoad-blue.svg)](https://pypi.python.org/pypi/pyoad/)
+*Spawn python code in a separate python interpreter and communicate with it easily.*
 
+[![Python versions](https://img.shields.io/pypi/pyversions/spawner.svg)](https://pypi.python.org/pypi/spawner/) [![Build Status](https://travis-ci.org/smarie/python-spawner.svg?branch=master)](https://travis-ci.org/smarie/python-spawner) [![Tests Status](https://smarie.github.io/python-spawner/junit/junit-badge.svg?dummy=8484744)](https://smarie.github.io/python-spawner/junit/report.html) [![codecov](https://codecov.io/gh/smarie/python-spawner/branch/master/graph/badge.svg)](https://codecov.io/gh/smarie/python-spawner)
 
-Project page : [https://smarie.github.io/python-object-as-daemon/](https://smarie.github.io/python-object-as-daemon/)
+[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-spawner/) [![PyPI](https://img.shields.io/pypi/v/spawner.svg)](https://pypi.python.org/pypi/spawner/) [![Downloads](https://pepy.tech/badge/spawner)](https://pepy.tech/project/spawner) [![Downloads per week](https://pepy.tech/badge/spawner/week)](https://pepy.tech/project/spawner) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-spawner.svg)](https://github.com/smarie/python-spawner/stargazers)
 
-## What's new
-
-* Travis and codecov integration
-* Doc now generated from markdown using [mkdocs](http://www.mkdocs.org/)
-* most special methods are now correctly proxified
-* object instance can now be created on either side (main process or daemon)
+**This is the readme for developers.** The documentation for users is available here: [https://smarie.github.io/python-spawner/](https://smarie.github.io/python-spawner/)
 
 ## Want to contribute ?
 
 Contributions are welcome ! Simply fork this project on github, commit your contributions, and create pull requests.
 
-Here is a non-exhaustive list of interesting open topics: [https://github.com/smarie/python-object-as-daemon/issues](https://github.com/smarie/python-object-as-daemon/issues)
+Here is a non-exhaustive list of interesting open topics: [https://github.com/smarie/python-spawner/issues](https://github.com/smarie/python-spawner/issues)
 
 ## Running the tests
 
-This project uses `pytest`. 
+This project uses `pytest`.
 
 ```bash
-pytest -v pyoad/tests/
+pytest -v spawner/tests/
 ```
 
 You may need to install requirements for setup beforehand, using 
@@ -51,7 +47,7 @@ pip install -r ci_tools/requirements-setup.txt
 This project uses `mkdocs` to generate its documentation page. Therefore building a local copy of the doc page may be done using:
 
 ```bash
-mkdocs build
+mkdocs build -f docs/mkdocs.yml
 ```
 
 You may need to install requirements for doc beforehand, using 
@@ -65,7 +61,7 @@ pip install -r ci_tools/requirements-doc.txt
 The following commands generate the html test report and the associated badge. 
 
 ```bash
-pytest --junitxml=junit.xml -v autoclass/tests/
+pytest --junitxml=junit.xml -v spawner/tests/
 ant -f ci_tools/generate-junit-html.xml
 python ci_tools/generate-junit-badge.py
 ```
