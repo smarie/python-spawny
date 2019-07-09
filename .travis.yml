@@ -2,87 +2,99 @@ language: python
 
 cache: pip
 
-python:
-#  - "2.6"
-#  - "2.7"
-#  - "3.2"
-#  - "3.3"
-#  - "3.4"
-  - "3.5"
-#  - "3.5-dev" # 3.5 development branch
-  - "3.6"
-#  - "3.6-dev" # 3.6 development branch
-#  - "3.7-dev" # 3.7 development branch
-#  - "nightly" # currently points to 3.7-dev
-# PyPy versions
-#  - "pypy"  # PyPy2 2.5.0
-#  - "pypy3" # Pypy3 2.4.0
-#  - "pypy-5.3.1"
-#
+matrix:
+  fast_finish: true
+  include:
+    # - python: 2.7
+    - python: 3.5
+    - python: 3.6
+    - python: 3.7
+      dist: xenial
+      sudo: true
 
 env:
   global:
-  - GH_REF: git@github.com:smarie/python-object-as-daemon.git
+  - GH_REF: git@github.com:smarie/python-spawner.git
 
 before_install:
+  # (a) linux dependencies
   - sudo apt-get install pandoc
   - sudo apt-get install ant
   - sudo apt-get install ant-optional  # for junitreports
 
 install:
-  - pip install -r ci_tools/requirements-setup.txt
-  - pip install -r ci_tools/requirements-test.txt
-  - pip install -r ci_tools/requirements-report.txt
-  - pip install -r ci_tools/requirements-doc.txt
-  - pip install codecov    # https://github.com/codecov/example-python. This is specific to travis integration
-# - pip install coveralls  # this is an alternative to codecov
+  - pip list
+  - pip install setuptools_scm  # apparently python 2 does not support that it is installed simultaneously with pytest-cases
+  - python ci_tools/py_install.py pip ci_tools/requirements-pip.txt
+  # travis-specific installs
+  - pip install PyGithub  # for ci_tools/github_release.py
+  - pip install codecov  # See https://github.com/codecov/example-python.
+  - pip list
 
 script:
+#  - coverage run tests.py
   - pip install .
-  - python -c "import os; os.chdir('..'); import pyoad"
-  #  - coverage run tests.py
-  - pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html --cov-report term-missing --cov=./pyoad -v pyoad/tests/
+  - python -c "import os; os.chdir('..'); import spawner"
+# ***tests***
+#  - coverage run tests.py
+#  - pytest --junitxml=reports/junit/junit.xml --html=reports/junit/report.html --cov-report term-missing --cov=./spawner -v spawner/tests/
+# now done in a dedicated script to capture exit code 1 and transform it to 0
+  - chmod a+x ./ci_tools/run_tests.sh
+  - sh ./ci_tools/run_tests.sh
+  - python ci_tools/generate-junit-badge.py 100  # generates the badge for the test results and fail build if less than x%
 
 after_success:
 # ***reporting***
 #  - junit2html junit.xml testrun.html  output is really not nice
   - ant -f ci_tools/generate-junit-html.xml  # generates the html for the test results. Actually we dont use it anymore
-  - python ci_tools/generate-junit-badge.py  # generates the badge for the test results
   - codecov
-  - pylint pyoad  # note that at the moment the report is simply lost, we dont transform the result into anything
+ # - pylint spawner  # note that at the moment the report is simply lost, we dont transform the result into anything
 # ***documentation***
   - mkdocs build -f docs/mkdocs.yml
   - mv reports/junit site/
   # mkdocs gh-deploy requires special care :
   # ---grant the possibility to push on the repo---
-  - if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then exit 0; fi;
-  - openssl aes-256-cbc -K $encrypted_60e2bdb32373_key -iv $encrypted_60e2bdb32373_iv -in ci_tools/github_travis_rsa_pyoad.enc -out ci_tools/github_travis_rsa_pyoad -d
-  - chmod 600 ci_tools/github_travis_rsa_pyoad
-  - eval `ssh-agent -s`  # launch the authentication agent
-  - ssh-add ci_tools/github_travis_rsa_pyoad  # register the key
-  - git config user.name "Automatic Publish"
-  - git config user.email "sylvain.marie@schneider-electric.com"
-  - git remote add gh-remote "${GH_REF}";
-  - git fetch gh-remote && git fetch gh-remote gh-pages:gh-pages;
-  # push but only if this is not a build triggered by a pull request
-  # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
-  # only push for 3.5 to avoid confusion
-  - if [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then echo "Pushing to github"; PYTHONPATH=autoclass/ mkdocs gh-deploy -v --dirty -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
-#  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then echo "Pushing to github"; git push gh-remote gh-pages; fi;
+  - openssl aes-256-cbc -K $encrypted_60e2bdb32373_key -iv $encrypted_60e2bdb32373_iv -in ci_tools/github_travis_rsa_spawner.enc -out ci_tools/github_travis_rsa_spawner -d
+  # If the output file does not exist, that is because the secret is invalid. This can happen in forked repos so do not fail the build
+  - |
+    if [ -s "ci_tools/github_travis_rsa" ]; then
+      chmod 600 ci_tools/github_travis_rsa
+      eval `ssh-agent -s`  # launch the authentication agent
+      ssh-add ci_tools/github_travis_rsa  # register the decrypted key
+      git config user.name "Automatic Publish"
+      git config user.email "sylvain.marie@schneider-electric.com"
+      git remote add gh-remote "${GH_REF}";
+      git fetch gh-remote && git fetch gh-remote gh-pages:gh-pages;  # make sure we have the latest gh-remote
+      # push but only if this is not a build triggered by a pull request
+      # note: here we use the --dirty flag so that mkdocs does not clean the additional reports that we copied in the site
+      if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_PYTHON_VERSION}" = "3.5" ]; then echo "Pushing to github"; PYTHONPATH=spawner/ mkdocs gh-deploy -v --dirty -f docs/mkdocs.yml --remote-name gh-remote; git push gh-remote gh-pages; fi;
+    else
+      echo "File 'ci_tools/github_travis_rsa' has not been created, please check your encrypted repo token in .travis.yml, on the line starting with 'openssl aes-256-cbc...'"
+    fi
+  # -- create the _version.py file
+  - python ci_tools/write_version.py ./spawner
 
 deploy:
-  provider: pypi
-  user: "smarie"
-  password:
-    secure: "yMxIWciXGSylSmMSBnRI8bLdiKTSa1byrklbzFhd+ACPzFB3O7TFFsZhMdPrvXabNx9vBEXhps8Zocn3RPY7VqnLlSZJi8E+glmm4FwvX/S3fJ9PyYjwEbOJvMlMZFcI5PHYq8JKYQDySYwoR3YFkLqQwzyaoyW/5qQCFtnlZdIrGV25nyWDKdUjGgmhGy19BQOYD791Gy8y9kLBzVsaOoA0rKi4OdF3Oij4GbSNqYjWgmXNRNeedB7Kx2SU8K8RwJc7qZhbzK9N16opUsrN3tN94X1g/C6ETVP1G0yA2mkAsKxJXvfJuUIDbrMMsHEeam/F+GDUgaMHM/JmOFUnYtUY1kWhkebilEYwpvckp12yVpYqmxCKXAmAl9RLvI7qSIRZdjf5JCJRUNGPcgrWjCDUhAgjLyVVJk5tQdFGgNbTcUN7oeP8anZc1lcF35fieM/Tdj1zckYDyCT+hvvPUD3qmSshpl2KwOgKGV32hwOJMUNctPLJfklr6xYW/QwKxsjidGC1xYChm9GvlzgRQxpjTzRPrrZiZuBLq6YvGuBxnhTSEyqdbd3gSe5JDtGLSTjqReb+UKqc7UBjNrVfF7H8gjE5jTVi/g4tQbtGbt0g8iD/AO6pPvT+0xJR4iSI30424GzTdT9Z77Q7B9Sa+dN38KN4CChu53cx0FCs198="
-  on:
-    tags: true
-    python: 3.5  #only one of the builds have to be deployed
-#  server: https://test.pypi.org/legacy/
-  distributions: "bdist_wheel"
+  # Deploy on PyPI on tags
+  - provider: pypi
+    user: "smarie"
+    password:
+      secure: "yMxIWciXGSylSmMSBnRI8bLdiKTSa1byrklbzFhd+ACPzFB3O7TFFsZhMdPrvXabNx9vBEXhps8Zocn3RPY7VqnLlSZJi8E+glmm4FwvX/S3fJ9PyYjwEbOJvMlMZFcI5PHYq8JKYQDySYwoR3YFkLqQwzyaoyW/5qQCFtnlZdIrGV25nyWDKdUjGgmhGy19BQOYD791Gy8y9kLBzVsaOoA0rKi4OdF3Oij4GbSNqYjWgmXNRNeedB7Kx2SU8K8RwJc7qZhbzK9N16opUsrN3tN94X1g/C6ETVP1G0yA2mkAsKxJXvfJuUIDbrMMsHEeam/F+GDUgaMHM/JmOFUnYtUY1kWhkebilEYwpvckp12yVpYqmxCKXAmAl9RLvI7qSIRZdjf5JCJRUNGPcgrWjCDUhAgjLyVVJk5tQdFGgNbTcUN7oeP8anZc1lcF35fieM/Tdj1zckYDyCT+hvvPUD3qmSshpl2KwOgKGV32hwOJMUNctPLJfklr6xYW/QwKxsjidGC1xYChm9GvlzgRQxpjTzRPrrZiZuBLq6YvGuBxnhTSEyqdbd3gSe5JDtGLSTjqReb+UKqc7UBjNrVfF7H8gjE5jTVi/g4tQbtGbt0g8iD/AO6pPvT+0xJR4iSI30424GzTdT9Z77Q7B9Sa+dN38KN4CChu53cx0FCs198="
+    on:
+      tags: true
+      python: 3.5  #only one of the builds have to be deployed
+      # condition: $PYTEST_VERSION = "<3"
+    # server: https://test.pypi.org/legacy/
+    distributions: "sdist bdist_wheel"
 
-matrix:
-    fast_finish: true
+  # Create a github release on tags
+  - provider: script
+    script: python ci_tools/github_release.py -s $GITHUB_TOKEN --repo-slug smarie/python-spawner -cf ./docs/changelog.md -d https://smarie.github.io/python-spawner/changelog/ $TRAVIS_TAG
+    skip_cleanup: true
+    on:
+      tags: true
+      python: 3.5  #only one of the builds have to be deployed
+      # condition: $PYTEST_VERSION = "<3"
 
 notifications:
   email:
