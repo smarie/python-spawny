@@ -1,6 +1,6 @@
 import subprocess
 
-from os import path
+from os import path, makedirs
 from io import StringIO
 
 import psutil
@@ -56,15 +56,19 @@ def _create_temporary_venv(env_name: str, py_version: str):
     """
     env_path = path.abspath(path.join(THIS_DIR, '../..', 'tmp_venv', env_name))
 
+    # make sure that the root dir exists
+    env_root_path = path.abspath(path.join(env_path, path.pardir))
+    makedirs(env_root_path, exist_ok=True)
+
     # Create virtual environment
-    if not path.isdir(env_path):
+    if not path.exists(env_path):
         try:
-            cmd = ['conda', 'create', '--prefix', env_path, 'python=' + py_version, '--yes']
+            cmd = ['conda', 'create', '--prefix', '"%s"' % env_path, 'python=%s' % py_version, '--yes']
             print('Creating Test virtual environment with conda: ' + ' '.join(cmd))
             subprocess.run(cmd)
             print('Test virtual environment created')
         except:
-            cmd = ['python', '- m', 'venv', env_path]
+            cmd = ['python', '-m', 'venv', '"%s"' % env_path]
             print('Conda does not seem to be available. Creating Test virtual environment with venv (selected version '
                   'number will be ignored): ' + ' '.join(cmd))
             subprocess.run(cmd)
