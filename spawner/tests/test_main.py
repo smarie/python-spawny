@@ -18,24 +18,32 @@ THIS_DIR = path.dirname(path.abspath(__file__))
 def test_mini_instance_def():
     """ Simple test with daemon-side instantiation of a io.StringIO """
     daemon_strio = DaemonProxy(InstanceDefinition('io', 'StringIO', 'hello, world!'))
-    print(daemon_strio.getvalue())
-    daemon_strio.terminate_daemon()
+    try:
+        print(daemon_strio.getvalue())
+    finally:
+        daemon_strio.terminate_daemon()
 
 
 def test_mini_instance_def_primitives():
     """ Simple test with daemon-side instantiation of a primitive (a str) """
     daemon_str = DaemonProxy(InstanceDefinition('builtins', 'str', 'hello, world!'))
-    print(daemon_str)
+    try:
+        print(daemon_str)
+    finally:
+        daemon_str.terminate_daemon()
 
 
 def test_mini_instance():
     """ Simple test with client-side instantiation of a str and transfer to the daemon """
     daemon_strio = DaemonProxy('hello, world!')
-    print(daemon_strio)  # str then repr
-    print('Explicit str required: ' + str(daemon_strio))  # str
-    print('With str formatting:  %s  ' % daemon_strio)
-    print('Explicit repr: ' + repr(daemon_strio))
-    print('Subscript: ' + daemon_strio[0:5])
+    try:
+        print(daemon_strio)  # str then repr
+        print('Explicit str required: ' + str(daemon_strio))  # str
+        print('With str formatting:  %s  ' % daemon_strio)
+        print('Explicit repr: ' + repr(daemon_strio))
+        print('Subscript: ' + daemon_strio[0:5])
+    finally:
+        daemon_strio.terminate_daemon()
 
 
 def _create_temporary_venv(env_name: str, py_version: str):
@@ -91,7 +99,10 @@ def test_main():
     # create daemon object
     print('daemon test')
     o_r = DaemonProxy(InstanceDefinition('io', 'StringIO', TEST_STR), python_exe=python_exe)
-    perform_test_actions(o_r, TEST_STR)
+    try:
+        perform_test_actions(o_r, TEST_STR)
+    finally:
+        o_r.terminate_daemon()
 
 
 def perform_test_actions(strio_obj: StringIO, ref_str):
