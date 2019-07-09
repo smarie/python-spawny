@@ -71,20 +71,24 @@ class DaemonProxy(metaclass=ProxifyDunderMeta):
         # self.logger.info('Object proxy created an interprocess communication channel')
 
         # --spawn an independent process
-        self.logger.info('Object proxy spawning Child process for object daemon')
+        self.logger.info('[%s] spawning Child process for object daemon...' % self)
         self.p = mp.Process(target=daemon, args=(child_conn, obj_instance_or_definition),
                             name=python_exe or 'python' + '-' + str(obj_instance_or_definition))
         self.p.start()
+        self.logger.info('[%s] spawning Child process for object daemon... DONE. PID=%s' % (self, self.p.pid))
         self.started = True
 
     def is_started(self):
         return self.started
 
+    def __str__(self):
+        return repr(self)
+
     def __repr__(self):
         if not self.is_started():
             return 'DaemonProxy<not started>'
         else:
-            return 'DaemonProxy<' + self.remote_call_using_pipe(METHOD_CMD, '__repr__') + '>'
+            return 'DaemonProxy<%s>' % self.p.pid
 
     def __getattr__(self, name):
         """
@@ -118,7 +122,7 @@ class DaemonProxy(metaclass=ProxifyDunderMeta):
         :return:
         """
         if not self.is_started():
-            raise Exception('Cannot perform remote calls - daemon is not started')
+            raise Exception('[%s] Cannot perform remote calls - daemon is not started' % self)
 
         if cmd_type == METHOD_CMD:
             log_str = 'execute method'
@@ -129,10 +133,10 @@ class DaemonProxy(metaclass=ProxifyDunderMeta):
         elif cmd_type == ATTR_OR_METHOD_CMD:
             log_str = 'check if this is a method or an attribute'
         else:
-            raise ValueError('Unknown command : ' + cmd_type)
+            raise ValueError('[%s] Unknown command : %s' + (self, cmd_type))
 
-        self.logger.debug('Object proxy asking daemon to ' + log_str + ((': ' + meth_or_attr_name)
-                                                                        if meth_or_attr_name is not None else ''))
+        query_str = log_str + ((': ' + meth_or_attr_name) if meth_or_attr_name is not None else '')
+        self.logger.debug('[%s] asking daemon to %s' % (self, query_str))
         self.parent_conn.send((cmd_type, meth_or_attr_name, args, kwargs))
 
         if cmd_type == EXIT_CMD:
@@ -142,17 +146,18 @@ class DaemonProxy(metaclass=ProxifyDunderMeta):
             res = self.parent_conn.recv()
             if res[0] == OK_FLAG:
                 if cmd_type == ATTR_OR_METHOD_CMD:
-                    str_to_log = meth_or_attr_name + (' is a method' if res[1] == METHOD_CMD else \
-                        ('is an attribute' if res[1] == ATTR_CMD else 'is unknown: ' + str(res[1])))
-                    self.logger.debug('Object proxy received response from daemon : ' + str_to_log)
+                    str_to_log = meth_or_attr_name \
+                                 + (' is a method' if res[1] == METHOD_CMD else
+                                    ('is an attribute' if res[1] == ATTR_CMD else 'is unknown: ' + str(res[1])))
+                    self.logger.debug('[%s] Received response from daemon: %s' % (self, str_to_log))
                 else:
-                    self.logger.debug('Object proxy received response from daemon : ' + str(res[1]))
+                    self.logger.debug('[%s] Received response from daemon: %s' % (self, res[1]))
                 return res[1]
             elif res[0] == ERR_FLAG:
-                self.logger.debug('Object proxy received error from daemon : ' + str(res[1]))
+                self.logger.debug('[%s] Received error from daemon: %s' % (self, res[1]))
                 raise res[1]
             else:
-                raise Exception('Unknown response flag received : ' + res[0] + '. Response body is ' + res[1])
+                raise Exception('[%s] Unknown response flag received: %s. Response body is %s' % (self, res[0], res[1]))
 
     def __del__(self):
         """
@@ -169,6 +174,8 @@ class DaemonProxy(metaclass=ProxifyDunderMeta):
         terminates the daemon subprocess
         :return:
         """
+        self_repr = repr(self)
+
         # call exit
         self.remote_call_using_pipe(EXIT_CMD)
 
@@ -180,7 +187,7 @@ class DaemonProxy(metaclass=ProxifyDunderMeta):
         # wait for child process termination
         self.p.join(timeout=10000)
         self.p.terminate()
-        self.logger.info('Object proxy terminated successfully')
+        self.logger.info('[%s] Terminated successfully' % self_repr)
 
 
 ObjectDaemonProxy = DaemonProxy
@@ -214,8 +221,8 @@ def daemon(conn, obj_instance_or_definition: Union[Any, InstanceDefinition]):
 
     pid = str(os.getpid())
     exe = sys.executable  # str(os.path.abspath(os.path.join(os.__file__, '../..')))
-    print_prefix = '[' + pid + '] Object daemon'
-    print(print_prefix + ' started in : ' + exe)
+    print_prefix = '[' + pid + '] Daemon'
+    print(print_prefix + ' started using python interpreter: ' + exe)
 
     # --init implementation
     if isinstance(obj_instance_or_definition, InstanceDefinition):
