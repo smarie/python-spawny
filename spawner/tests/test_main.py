@@ -6,7 +6,7 @@ from io import StringIO
 import psutil
 import pytest
 
-from pyoad import init_mp_context, ObjectDaemonProxy, InstanceDefinition
+from spawner import DaemonProxy, InstanceDefinition  # init_mp_context
 
 THIS_DIR = path.dirname(path.abspath(__file__))
 
@@ -17,19 +17,20 @@ THIS_DIR = path.dirname(path.abspath(__file__))
 
 def test_mini_instance_def():
     """ Simple test with daemon-side instantiation of a io.StringIO """
-    daemon_strio = ObjectDaemonProxy(InstanceDefinition('io', 'StringIO', 'hello, world!'))
+    daemon_strio = DaemonProxy(InstanceDefinition('io', 'StringIO', 'hello, world!'))
     print(daemon_strio.getvalue())
+    daemon_strio.terminate_daemon()
 
 
 def test_mini_instance_def_primitives():
     """ Simple test with daemon-side instantiation of a primitive (a str) """
-    daemon_str = ObjectDaemonProxy(InstanceDefinition('builtins', 'str', 'hello, world!'))
+    daemon_str = DaemonProxy(InstanceDefinition('builtins', 'str', 'hello, world!'))
     print(daemon_str)
 
 
 def test_mini_instance():
     """ Simple test with client-side instantiation of a str and transfer to the daemon """
-    daemon_strio = ObjectDaemonProxy('hello, world!')
+    daemon_strio = DaemonProxy('hello, world!')
     print(daemon_strio)  # str then repr
     print('Explicit str required: ' + str(daemon_strio))  # str
     print('With str formatting:  %s  ' % daemon_strio)
@@ -89,7 +90,7 @@ def test_main():
 
     # create daemon object
     print('daemon test')
-    o_r = ObjectDaemonProxy(InstanceDefinition('io', 'StringIO', TEST_STR), python_exe=python_exe)
+    o_r = DaemonProxy(InstanceDefinition('io', 'StringIO', TEST_STR), python_exe=python_exe)
     perform_test_actions(o_r, TEST_STR)
 
 
@@ -125,7 +126,7 @@ def teardown_module(module):
 
     # you may wish to create this object to check that the termination code works, but warning: in debug mode,
     # the debugger will call its str() method after each step to refresh the 'variables' panel > might lock.
-    # o_r = ObjectDaemonProxy('to_terminate')
+    # o_r = DaemonProxy('to_terminate')
 
     def on_terminate(proc):
         print("process {} terminated with exit code {}".format(proc, proc.returncode))

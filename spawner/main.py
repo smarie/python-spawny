@@ -1,13 +1,13 @@
 import multiprocessing as mp
 import os
-from importlib import import_module
 from logging import Logger
 
 import sys
-from types import MethodType
-from typing import Optional, Union, Any, List, Dict, Tuple
+from typing import Union, Any, List, Dict, Tuple
 
-import logging
+from spawner.main_remotes_and_defs import InstanceDefinition, ScriptDefinition
+from spawner.utils_logging import default_logger
+from spawner.utils_object_proxy import ProxifyDunderMeta, replace_all_dundermethods_with_getattr
 
 
 def init_mp_context():
@@ -27,116 +27,10 @@ METHOD_CMD = 2
 ATTR_CMD = 3
 
 
-# default logger
-_default_logger = logging.getLogger('pyoad')
-ch = logging.StreamHandler(sys.stdout)
-_default_logger.addHandler(ch)
-# _default_logger.setLevel(logging.DEBUG)
-
-# TODO maybe it is possible to actually send the initial object to the daemon. Not sure why it would be interesting..
-
-
-class InstanceDefinition(object):
+class DaemonProxy(metaclass=ProxifyDunderMeta):
     """
-    Represents the definition of an object instance to create.
-    """
-
-    def __init__(self, module_name: Optional[str], clazz_name: str, *args, **kwargs):
-        """
-        Creates a definition to instantiate an object of class `clazz_name` in module `module_name`, with constructor
-        arguments *args and **kwargs. Submodules are supported, simply add them in `module_name` with the dot notation,
-        such as 'os.path'. To create instances of build-in types such as 'int', set module_name to '' or None.
-
-        :param module_name:
-        :param clazz_name:
-        :param args:
-        :param kwargs:
-        """
-        self.module_name = module_name
-        self.clazz_name = clazz_name
-        self.args = args
-        self.kwargs = kwargs
-
-    def __str__(self):
-        return ('' if self.module_name is None else self.module_name) + '.' + self.clazz_name + '(' + str(self.args) \
-               + ';' + str(self.kwargs) + ')'
-
-    def get_type(self):
-        """
-        Utility method to return the class of objects corresponding to this definition
-        :return:
-        """
-        # find the class, optionally from an imported module
-        if self.module_name is not None and self.module_name != '':
-            m = import_module(self.module_name)
-            clazz = getattr(m, self.clazz_name)
-        else:
-            clazz = globals()[self.clazz_name]
-        return clazz
-
-    def instantiate(self):
-        """
-        Utility method to instantiate an object corresponding to this definition
-        :return:
-        """
-        # find the class
-        clazz = self.get_type()
-
-        # instantiate
-        return clazz(*self.args, **self.kwargs)
-
-
-def replace_all_dundermethods_with_getattr(ignore, from_cls, to_cls_or_inst, is_class: bool,
-                                           logger: Logger = _default_logger):
-    """
-    For all methods of from_cls replace/add a method on to_cls_or_inst that relies on __getattr__ to be retrieved.
-    If is_class is false, to_cls_or_inst is an instance and only the new methods (not already on the class) will be
-    replaced
-
-    :param ignore:
-    :param from_cls:
-    :param to_cls_or_inst:
-    :param is_class:
-    :return:
-    """
-    def make_proxy(name):
-        def proxy(self, *args):
-            return self.__getattr__(name)
-        return proxy
-
-    to_replace = [name for name in dir(from_cls) if name.startswith("__") and name not in ignore]
-    if is_class:
-        logger.debug('Replacing methods ' + str(to_replace) + ' on class ' + to_cls_or_inst.__name__
-                     + ' by explicit calls to __getattr__')
-    else:
-        to_replace = [name for name in to_replace if not hasattr(type(to_cls_or_inst), name)]
-        logger.debug('Replacing methods ' + str(to_replace) + ' on instance ' + repr(to_cls_or_inst)
-                     + ' by explicit calls to __getattr__')
-
-    for name in to_replace:
-        if is_class:
-            # that means <name> is not in the ignore list, and not in the explicitly implemented methods (dct)
-            # so for those ones, replace the class' method by a proxy redirecting explicitly to getattr
-            # logger.debug('Replacing method ' + name + ' on class ' + to_cls_or_inst.__name__)
-            setattr(to_cls_or_inst, name, property(make_proxy(name)))
-        else:
-            # logger.debug('Replacing method ' + name + ' on instance ' + repr(to_cls_or_inst))
-            setattr(to_cls_or_inst, name, MethodType(make_proxy(name), to_cls_or_inst))
-
-
-class ProxifyDunderMeta(type):
-    def __init__(cls, name, bases, dct):
-        type.__init__(cls, name, bases, dct)
-        to_ignore = set("__%s__" % n for n in cls.__ignore__.split())
-        to_ignore.update(set(dct.keys()))
-        replace_all_dundermethods_with_getattr(to_ignore, cls, cls, is_class=True)
-        # add everything from dict class so that at least
-        replace_all_dundermethods_with_getattr(to_ignore, dict, cls, is_class=True)
-
-
-class ObjectDaemonProxy(metaclass=ProxifyDunderMeta):
-    """
-    A proxy that spawns a separate process and delegates the methods to it.
+    A proxy that spawns (or TODO conects to)
+    a separate process and delegates the methods to it.
 
     For the trick about redirecting all dunder methods to getattr, see
     https://stackoverflow.com/questions/9057669/how-can-i-intercept-calls-to-pythons-magic-methods-in-new-style-classes
@@ -145,7 +39,7 @@ class ObjectDaemonProxy(metaclass=ProxifyDunderMeta):
     __ignore__ = "class mro new init setattr getattr getattribute dict del dir doc name qualname module"
 
     def __init__(self, obj_instance_or_definition: Union[Any, InstanceDefinition], python_exe: str = None,
-                 logger: Logger = _default_logger):
+                 logger: Logger = default_logger):
         """
         Creates a daemon running the provided object instance, and inits this Proxy to be able to delegate the calls to
         the daemon. Users may either provide the object instance, or a definition of instance to create. In that case
@@ -158,14 +52,14 @@ class ObjectDaemonProxy(metaclass=ProxifyDunderMeta):
         :param logger: an optional custom logger. By default a logger that prints to stdout will be used.
         """
         self.started = False
-        self.logger = logger or _default_logger
+        self.logger = logger or default_logger
 
         # --proxify all dunder methods from the instance type
         # unfortunately this does not help much since for new-style classes, special methods are only looked up on the
         # class not the instance. That's why we try to register as much special methods as possible in ProxifyDunderMeta
         instance_type = obj_instance_or_definition.get_type() \
             if isinstance(obj_instance_or_definition, InstanceDefinition) else type(obj_instance_or_definition)
-        replace_all_dundermethods_with_getattr(set("__%s__" % n for n in ObjectDaemonProxy.__ignore__.split()),
+        replace_all_dundermethods_with_getattr(set("__%s__" % n for n in DaemonProxy.__ignore__.split()),
                                                instance_type, self, is_class=False)
 
         # --set executable (actually there is no way to ensure that this is atomic with mp.Process(), too bad !
@@ -188,9 +82,9 @@ class ObjectDaemonProxy(metaclass=ProxifyDunderMeta):
 
     def __repr__(self):
         if not self.is_started():
-            return 'ObjectDaemonProxy<not started>'
+            return 'DaemonProxy<not started>'
         else:
-            return 'ObjectDaemonProxy<' + self.remote_call_using_pipe(METHOD_CMD, '__repr__') + '>'
+            return 'DaemonProxy<' + self.remote_call_using_pipe(METHOD_CMD, '__repr__') + '>'
 
     def __getattr__(self, name):
         """
@@ -289,12 +183,18 @@ class ObjectDaemonProxy(metaclass=ProxifyDunderMeta):
         self.logger.info('Object proxy terminated successfully')
 
 
+ObjectDaemonProxy = DaemonProxy
+"""Old alias"""
+
+
 def daemon(conn, obj_instance_or_definition: Union[Any, InstanceDefinition]):
     """
     Implements a daemon connected to the multiprocessing Pipe provided as first argument.
+
     This daemon will
-    * either reuse the object instance provided, or create an instance corresponding to the InstanceDefinition provided
-    * dispatch to this instance any command received over the pipe, and return the results.
+
+     * either reuse the object instance provided, or create an instance corresponding to the InstanceDefinition provided
+     * dispatch to this instance any command received over the pipe, and return the results.
 
     Note that exceptions are correctly sent back too.
 
@@ -308,7 +208,7 @@ def daemon(conn, obj_instance_or_definition: Union[Any, InstanceDefinition]):
     # TODO (even local import) does not work
     # import sys
     # from logging import getLogger, StreamHandler
-    # _daemon_logger = getLogger('pyoad-daemon')
+    # _daemon_logger = getLogger('spawner-daemon')
     # ch = StreamHandler(sys.stdout)
     # _daemon_logger.addHandler(ch)
 
@@ -320,6 +220,8 @@ def daemon(conn, obj_instance_or_definition: Union[Any, InstanceDefinition]):
     # --init implementation
     if isinstance(obj_instance_or_definition, InstanceDefinition):
         impl = obj_instance_or_definition.instantiate()
+    elif isinstance(obj_instance_or_definition, ScriptDefinition):
+        impl = obj_instance_or_definition.execute()
     else:
         impl = obj_instance_or_definition
 
@@ -407,4 +309,4 @@ def execute_cmd(print_prefix: str, impl: Any, cmd_type: int,
         return getattr(impl, method_or_attr_name)
 
     else:
-        print(print_prefix + ' received unknown command : ' + cmd_type + '. Ignoring...')
+        print(print_prefix + ' received unknown command : %s. Ignoring...' % cmd_type)

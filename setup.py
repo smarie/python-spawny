@@ -3,11 +3,10 @@ See:
 https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
-
+from six import raise_from
 from os import path
 
 from setuptools import setup, find_packages
-from warnings import warn
 
 here = path.abspath(path.dirname(__file__))
 
@@ -17,45 +16,45 @@ DEPENDENCY_LINKS = []
 SETUP_REQUIRES = ['pytest-runner','setuptools_scm', 'pypandoc', 'pandoc']
 TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov', 'psutil']
 EXTRAS_REQUIRE = {}
+
 # simple check
 try:
     from setuptools_scm import get_version
 except Exception as e:
-    raise Exception('Required packages for setup not found. You may wish you execute '
-                    '"pip install -r ci_tools/requirements-setup.txt" to install them or alternatively install them '
-                    'manually using conda or other system. The list is : ' + str(SETUP_REQUIRES)) from e
+    raise_from(Exception('Required packages for setup not found. Please install `setuptools_scm`'), e)
 
 # ************** ID card *****************
-DISTNAME = 'pyoad'
-DESCRIPTION = 'Spawns an object as a daemon in another process, possibly using another python executable/environment'
-MAINTAINER = 'Sylvain Marié'
-MAINTAINER_EMAIL = 'sylvain.marie@schneider-electric.com'
-URL = 'https://github.com/smarie/python-object-as-daemon'
+DISTNAME = 'spawner'
+DESCRIPTION = 'Spawns a pythyon script as a daemon in another process, possibly using another python executable/environment'
+MAINTAINER = 'Sylvain MARIE'
+MAINTAINER_EMAIL = 'sylvain.marie@se.com'
+URL = 'https://github.com/smarie/python-spawner'
 LICENSE = 'BSD 3-Clause'
 LICENSE_LONG = 'License :: OSI Approved :: BSD License'
 
 version_for_download_url = get_version()
 DOWNLOAD_URL = URL + '/tarball/' + version_for_download_url
 
-KEYWORDS = 'spawn object process daemon proxy rpc distribute'
+KEYWORDS = 'spawn script object process daemon proxy rpc distribute'
 
 # --Get the long description from the README file
-#with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+# with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 #    LONG_DESCRIPTION = f.read()
 try:
     import pypandoc
-    LONG_DESCRIPTION = pypandoc.convert(path.join(here, 'README.md'), 'rst').replace('\r', '')
+    LONG_DESCRIPTION = pypandoc.convert(path.join(here, 'docs', 'long_description.md'), 'rst').replace('\r', '')
 except(ImportError):
     from warnings import warn
     warn('WARNING pypandoc could not be imported - we recommend that you install it in order to package the '
          'documentation correctly')
     LONG_DESCRIPTION = open('README.md').read()
 
-# ************* VERSION **************
+# ************* VERSION A **************
 # --Get the Version number from VERSION file, see https://packaging.python.org/single_source_version/ option 4.
 # THIS IS DEPRECATED AS WE NOW USE GIT TO MANAGE VERSION
 # with open(path.join(here, 'VERSION')) as version_file:
 #    VERSION = version_file.read().strip()
+OBSOLETES = ['pyoad']
 
 setup(
     name=DISTNAME,
@@ -65,7 +64,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    #version=VERSION, NOW HANDLED BY GIT
+    # version=VERSION, NOW HANDLED BY GIT
 
     maintainer=MAINTAINER,
     maintainer_email=MAINTAINER_EMAIL,
@@ -91,14 +90,17 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        #'Programming Language :: Python :: 2',
-        #'Programming Language :: Python :: 2.6',
-        #'Programming Language :: Python :: 2.7',
-        #'Programming Language :: Python :: 3',
-        #'Programming Language :: Python :: 3.3',
-        #'Programming Language :: Python :: 3.4',
+        # 'Programming Language :: Python :: 2',
+        # 'Programming Language :: Python :: 2.6',
+        # 'Programming Language :: Python :: 2.7',
+        # 'Programming Language :: Python :: 3',
+        # 'Programming Language :: Python :: 3.3',
+        # 'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+
+        # 'Framework :: Pytest'
     ],
 
     # What does your project relate to?
@@ -120,8 +122,8 @@ setup(
     dependency_links=DEPENDENCY_LINKS,
 
     # we're using git
-    use_scm_version=True, # this provides the version + adds the date if local non-commited changes.
-    #use_scm_version={'local_scheme':'dirty-tag'}, # this provides the version + adds '+dirty' if local non-commited changes.
+    use_scm_version={'write_to': '%s/_version.py' % DISTNAME}, # this provides the version + adds the date if local non-commited changes.
+    # use_scm_version={'local_scheme':'dirty-tag'}, # this provides the version + adds '+dirty' if local non-commited changes.
     setup_requires=SETUP_REQUIRES,
 
     # test
@@ -132,7 +134,9 @@ setup(
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[dev,test]
-    extras_require=EXTRAS_REQUIRE
+    extras_require=EXTRAS_REQUIRE,
+
+    obsoletes=OBSOLETES
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
@@ -155,4 +159,5 @@ setup(
     #         'sample=sample:main',
     #     ],
     # },
+
 )
