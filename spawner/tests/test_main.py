@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 from os import path, makedirs
 from io import StringIO
@@ -91,7 +92,7 @@ def test_main():
     """ Spawns a io.StringIO daemon in a temporary venv and asserts that it behaves exactly like a local instance """
 
     # --create temporary new python environment
-    python_exe = _create_temporary_venv('tmp', '3.5.0')
+    python_exe = _create_temporary_venv('tmp', ".".join(sys.version_info[0:2]))
 
     TEST_STR = 'str\nhello'
 
