@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 import multiprocessing as mp
 import os
 from logging import Logger
@@ -61,9 +60,10 @@ class DaemonProxy(with_metaclass(ProxifyDunderMeta, object)):
         the instance will be created in the daemon.
 
         :param obj_instance_or_definition: the object instance to use in the daemon, or the definition that the daemon
-        should follow to create the object instance
+            should follow to create the object instance
         :param python_exe: the optional python executable to use to launch the daemon. By default the same executable
-        than this process will be used.
+            than this process will be used. Note that a non-None value is not supported on python 2 if the system is
+            not windows
         :param logger: an optional custom logger. By default a logger that prints to stdout will be used.
         """
         self.started = False
@@ -79,6 +79,9 @@ class DaemonProxy(with_metaclass(ProxifyDunderMeta, object)):
 
         # --set executable (actually there is no way to ensure that this is atomic with mp.Process(), too bad !
         if python_exe is not None:
+            if sys.version_info < (3, 0) and not sys.platform.startswith('win'):
+                raise ValueError("`python_exe` can only be set on windows under python 2. See "
+                                 "https://docs.python.org/2/library/multiprocessing.html#multiprocessing.")
             mp.set_executable(python_exe)
 
         # --init the multiprocess communication queue/pipe

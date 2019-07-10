@@ -54,6 +54,9 @@ def test_mini_instance():
         daemon_strio.terminate_daemon()
 
 
+@pytest.mark.skipif(sys.version_info < (3, 0) and not sys.platform.startswith('win'),
+                    reason="requires python3 or higher because `set_executable` is only available on windows for "
+                           "python 2")
 def test_main():
     """ Spawns a io.StringIO daemon in a temporary venv and asserts that it behaves exactly like a local instance """
 
