@@ -85,4 +85,24 @@ class ScriptDefinition(object):
         # create a new module with that name, and execute the script in it
         m = new_module(name % i)
         exec(self.script, m.__dict__)
+        # return RemoteScript(m)
         return m
+
+
+# class RemoteScript(object):
+#     __slots__ = 'module',
+#
+#     def __init__(self, module):
+#         self.module = module
+#
+#     def __getattr__(self, item):
+#         if item == 'module':
+#             return object.__getattribute__(self, item)
+#         else:
+#             return self.module.item
+#
+#     def __setattr__(self, item, value):
+#         if item == 'module':
+#             object.__setattr__(self, item, value)
+#         else:
+#             self.module.item = value
