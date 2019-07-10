@@ -77,13 +77,13 @@ def _create_temporary_venv(env_name,   # type: str
             cmd = ['conda', 'create', '--prefix', '"%s"' % env_path, 'python=%s' % py_version, '--yes']
             print('Creating Test virtual environment with conda: ' + ' '.join(cmd))
             # NOTE: conda needs to be on the path !
-            subprocess.run(cmd)
+            subprocess.check_call(cmd)
             print('Test virtual environment created')
         except:
             cmd = ['python', '-m', 'venv', '"%s"' % env_path]
             print('Conda does not seem to be available. Creating Test virtual environment with venv (selected version '
                   'number will be ignored): ' + ' '.join(cmd))
-            subprocess.run(cmd)
+            subprocess.check_call(cmd)
             print('Test virtual environment created')
     else:
         print('Test virtual environment already exists')
@@ -114,7 +114,7 @@ def test_main():
 
     # create daemon object
     print('daemon test')
-    o_r = DaemonProxy(InstanceDefinition('io', 'StringIO', TEST_STR), python_exe=python_exe)
+    o_r = DaemonProxy(InstanceDefinition(StringIO.__module__, 'StringIO', TEST_STR), python_exe=python_exe)
     try:
         perform_test_actions(o_r, TEST_STR)
     finally:
