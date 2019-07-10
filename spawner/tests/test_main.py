@@ -54,8 +54,6 @@ def test_mini_instance():
         daemon_strio.terminate_daemon()
 
 
-@pytest.mark.skipif(sys.version_info < (3, 0), reason="requires python3 or higher because strange error set_executable "
-                                                      "not found")
 def test_main():
     """ Spawns a io.StringIO daemon in a temporary venv and asserts that it behaves exactly like a local instance """
 
