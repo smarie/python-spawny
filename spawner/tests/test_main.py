@@ -54,51 +54,6 @@ def test_mini_instance():
         daemon_strio.terminate_daemon()
 
 
-def _create_temporary_venv(env_name,   # type: str
-                           py_version  # type: str
-                           ):
-    """
-    Creates a temporary virtual environment with the provided python version
-
-    :param env_name:
-    :param py_version:
-    :return:
-    """
-    env_path = path.abspath(path.join(THIS_DIR, '../..', 'tmp_venv', env_name))
-
-    # make sure that the root dir exists
-    env_root_path = path.abspath(path.join(env_path, path.pardir))
-    if not path.exists(env_root_path):
-        makedirs(env_root_path)
-
-    # Create virtual environment
-    if not path.exists(env_path):
-        try:
-            cmd = ['conda', 'create', '--prefix', '"%s"' % env_path, 'python=%s' % py_version, '--yes']
-            print('Creating Test virtual environment with conda: ' + ' '.join(cmd))
-            # NOTE: conda needs to be on the path !
-            subprocess.check_call(cmd)
-            print('Test virtual environment created')
-        except:
-            cmd = ['python', '-m', 'venv', '"%s"' % env_path]
-            print('Conda does not seem to be available. Creating Test virtual environment with venv (selected version '
-                  'number will be ignored): ' + ' '.join(cmd))
-            subprocess.check_call(cmd)
-            print('Test virtual environment created')
-    else:
-        print('Test virtual environment already exists')
-
-    if path.exists(path.join(env_path, 'python.exe')):
-        # conda
-        print('Test virtual environment is conda')
-        python_exe = path.join(env_path, 'python.exe')
-    else:
-        # venv
-        print('Test virtual environment is venv')
-        python_exe = path.join(env_path, 'scripts', 'python.exe')
-    return python_exe
-
-
 def test_main():
     """ Spawns a io.StringIO daemon in a temporary venv and asserts that it behaves exactly like a local instance """
 
@@ -168,3 +123,52 @@ def teardown_module(module):
         p.kill()
 
     print('DONE')
+
+
+def _create_temporary_venv(env_name,   # type: str
+                           py_version  # type: str
+                           ):
+    """
+    Creates a temporary virtual environment with the provided python version
+
+    :param env_name:
+    :param py_version:
+    :return:
+    """
+    env_path = path.abspath(path.join(THIS_DIR, '../..', 'tmp_venv', env_name))
+
+    # make sure that the root dir exists
+    env_root_path = path.abspath(path.join(env_path, path.pardir))
+    if not path.exists(env_root_path):
+        makedirs(env_root_path)
+
+    # Create virtual environment
+    if not path.exists(env_path):
+        try:
+            cmd = ['conda', 'create', '--prefix', '"%s"' % env_path, 'python=%s' % py_version, '--yes']
+            print('Creating Test virtual environment with conda: ' + ' '.join(cmd))
+            # NOTE: conda needs to be on the path !
+            subprocess.check_call(' '.join(cmd), shell=True)
+            print('Test virtual environment created')
+        except:
+            if sys.version_info >= (3, 3):
+                venv_module_name = 'venv'
+            else:
+                venv_module_name = 'virtualenv'
+            cmd = ['python', '-m', venv_module_name, '"%s"' % env_path]
+            print('Conda does not seem to be available. Creating Test virtual environment with venv (selected version '
+                  'number will be ignored): ' + ' '.join(cmd))
+            subprocess.check_call(' '.join(cmd), shell=True)
+            print('Test virtual environment created')
+    else:
+        print('Test virtual environment already exists')
+
+    if path.exists(path.join(env_path, 'python.exe')):
+        # conda
+        print('Test virtual environment is conda')
+        python_exe = path.join(env_path, 'python.exe')
+    else:
+        # venv
+        print('Test virtual environment is venv')
+        python_exe = path.join(env_path, 'scripts', 'python.exe')
+    return python_exe

@@ -14,7 +14,7 @@ here = path.abspath(path.dirname(__file__))
 INSTALL_REQUIRES = ['future;python_version<"3.2"']
 DEPENDENCY_LINKS = []
 SETUP_REQUIRES = ['pytest-runner','setuptools_scm', 'pypandoc', 'pandoc']
-TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov', 'psutil']
+TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov', 'psutil', 'virtualenv;python_version<"3.2"']
 EXTRAS_REQUIRE = {}
 
 # simple check
