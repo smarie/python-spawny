@@ -89,13 +89,13 @@ class DaemonProxy(with_metaclass(ProxifyDunderMeta, object)):
         # self.logger.info('Object proxy created an interprocess communication channel')
 
         # --spawn an independent process
-        self.logger.info('[%s] spawning Child process for object daemon...' % self)
+        self.logger.info('[DaemonProxy] spawning child process...')
         self.p = mp.Process(target=daemon, args=(child_conn, obj_instance_or_definition),
                             name=python_exe or 'python' + '-' + str(obj_instance_or_definition))
         self.p.start()
         # make sure that instantiation happened correctly, and report possible exception otherwise
         self.wait_for_response(START_CMD)
-        self.logger.info('[%s] spawning Child process for object daemon... DONE. PID=%s' % (self, self.p.pid))
+        self.logger.info('[DaemonProxy] spawning child process... DONE. PID=%s' % (self.p.pid))
         self.started = True
 
     def is_started(self):
