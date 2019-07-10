@@ -1,6 +1,6 @@
 import sys
 from collections import OrderedDict
-from os.path import pardir, join
+from os.path import join, dirname
 
 from spawner import ScriptDefinition, DaemonProxy, ModuleDefinition
 
@@ -26,7 +26,7 @@ foo = "hello world"
         remote_script.terminate_daemon()
 
 
-RESOURCES_DIR = join(__file__, pardir, 'resources')
+RESOURCES_DIR = join(dirname(__file__), 'resources')
 NOT_IN_PATH_RESOURCES_DIR = join(RESOURCES_DIR, 'not_in_path')
 
 
