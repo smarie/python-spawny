@@ -12,7 +12,12 @@ class InstanceDefinition(object):
     Represents the definition of an object instance to create.
     """
 
-    def __init__(self, module_name: Optional[str], clazz_name: str, *args, **kwargs):
+    def __init__(self,
+                 module_name,  # type: Optional[str]
+                 clazz_name,   # type: str
+                 *args,
+                 **kwargs
+                 ):
         """
         Creates a definition to instantiate an object of class `clazz_name` in module `module_name`, with constructor
         arguments *args and **kwargs. Submodules are supported, simply add them in `module_name` with the dot notation,

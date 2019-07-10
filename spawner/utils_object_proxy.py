@@ -4,8 +4,12 @@ from types import MethodType
 from spawner.utils_logging import default_logger
 
 
-def replace_all_dundermethods_with_getattr(ignore, from_cls, to_cls_or_inst, is_class: bool,
-                                           logger: Logger = default_logger):
+def replace_all_dundermethods_with_getattr(ignore,
+                                           from_cls,
+                                           to_cls_or_inst,
+                                           is_class,                # type: bool
+                                           logger = default_logger  # type: Logger
+                                           ):
     """
     For all methods of from_cls replace/add a method on to_cls_or_inst that relies on __getattr__ to be retrieved.
     If is_class is false, to_cls_or_inst is an instance and only the new methods (not already on the class) will be
@@ -15,6 +19,7 @@ def replace_all_dundermethods_with_getattr(ignore, from_cls, to_cls_or_inst, is_
     :param from_cls:
     :param to_cls_or_inst:
     :param is_class:
+    :param logger:
     :return:
     """
     def make_proxy(name):

@@ -2,7 +2,11 @@ import subprocess
 import sys
 
 from os import path, makedirs
-from io import StringIO
+
+try:  # python 2
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 import psutil
 import pytest
@@ -21,7 +25,7 @@ THIS_DIR = path.dirname(path.abspath(__file__))
 
 def test_mini_instance_def():
     """ Simple test with daemon-side instantiation of a io.StringIO """
-    daemon_strio = DaemonProxy(InstanceDefinition('io', 'StringIO', 'hello, world!'))
+    daemon_strio = DaemonProxy(InstanceDefinition(StringIO.__module__, 'StringIO', 'hello, world!'))
     try:
         print(daemon_strio.getvalue())
     finally:
@@ -50,7 +54,9 @@ def test_mini_instance():
         daemon_strio.terminate_daemon()
 
 
-def _create_temporary_venv(env_name: str, py_version: str):
+def _create_temporary_venv(env_name,   # type: str
+                           py_version  # type: str
+                           ):
     """
     Creates a temporary virtual environment with the provided python version
 
@@ -62,7 +68,8 @@ def _create_temporary_venv(env_name: str, py_version: str):
 
     # make sure that the root dir exists
     env_root_path = path.abspath(path.join(env_path, path.pardir))
-    makedirs(env_root_path, exist_ok=True)
+    if not path.exists(env_root_path):
+        makedirs(env_root_path)
 
     # Create virtual environment
     if not path.exists(env_path):
@@ -114,7 +121,8 @@ def test_main():
         o_r.terminate_daemon()
 
 
-def perform_test_actions(strio_obj: StringIO, ref_str):
+def perform_test_actions(strio_obj,  # type: StringIO
+                         ref_str):
     # --test get_value
     assert strio_obj.getvalue() == ref_str
 
