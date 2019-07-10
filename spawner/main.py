@@ -14,7 +14,7 @@ try: # python 3.5+
 except ImportError:
     pass
 
-from spawner.main_remotes_and_defs import InstanceDefinition, ScriptDefinition
+from spawner.main_remotes_and_defs import InstanceDefinition, ScriptDefinition, ModuleDefinition
 from spawner.utils_logging import default_logger
 from spawner.utils_object_proxy import ProxifyDunderMeta, replace_all_dundermethods_with_getattr
 
@@ -49,7 +49,7 @@ class DaemonProxy(with_metaclass(ProxifyDunderMeta, object)):
     __ignore__ = "class mro new init setattr getattr getattribute dict del dir doc name qualname module"
 
     def __init__(self,
-                 obj_instance_or_definition,  # type: Union[Any, InstanceDefinition]
+                 obj_instance_or_definition,  # type: Union[Any, InstanceDefinition, ScriptDefinition]
                  python_exe=None,             # type: str
                  logger=default_logger        # type: Logger
                  ):
@@ -267,7 +267,10 @@ def daemon(conn,
             impl = obj_instance_or_definition.instantiate()
         elif isinstance(obj_instance_or_definition, ScriptDefinition):
             impl = obj_instance_or_definition.execute()
+        elif isinstance(obj_instance_or_definition, ModuleDefinition):
+            impl = obj_instance_or_definition.execute()
         else:
+            # the object was entirely transfered on the wire by the client.
             impl = obj_instance_or_definition
 
     except Exception as e:

@@ -6,6 +6,23 @@ try:  # python 3.5+
 except ImportError:
     pass
 
+try: # python 3.5+
+    from importlib import util as import_util
+
+    def import_from_source(module_name, module_path):
+        spec = import_util.spec_from_file_location(module_name, module_path)
+        foo = import_util.module_from_spec(spec)
+        spec.loader.exec_module(foo)
+        return foo
+
+except ImportError:
+    # python 2
+    import imp
+
+    def import_from_source(module_name, module_path):
+        foo = imp.load_source(module_name, module_path)
+        return foo
+
 
 class InstanceDefinition(object):
     """
@@ -68,7 +85,9 @@ class ScriptDefinition(object):
     """
     __slots__ = 'script',
 
-    def __init__(self, script_as_str):
+    def __init__(self,
+                 script_as_str  # type: str
+                 ):
         self.script = script_as_str
 
     def execute(self):
@@ -106,3 +125,33 @@ class ScriptDefinition(object):
 #             object.__setattr__(self, item, value)
 #         else:
 #             self.module.item = value
+
+
+class ModuleDefinition(object):
+    """
+    Represents a module to run remotely
+    """
+    __slots__ = 'module_name', 'module_path'
+
+    def __init__(self,
+                 module_name,
+                 module_path=None
+                 ):
+        """
+
+        :param module_name:
+        :param module_path:
+        """
+        self.module_name = module_name
+        self.module_path = module_path
+
+    def execute(self):
+        """
+        Creates a new module and executes the script in it. The newly created module is returned.
+        :return:
+        """
+        if self.module_path is None:
+            m = import_module(self.module_name)
+        else:
+            m = import_from_source(self.module_name, self.module_path)
+        return m

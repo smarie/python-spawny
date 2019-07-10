@@ -1,4 +1,4 @@
-from spawner.main_remotes_and_defs import ScriptDefinition, InstanceDefinition
+from spawner.main_remotes_and_defs import ScriptDefinition, InstanceDefinition, ModuleDefinition
 from spawner.main import ObjectDaemonProxy, DaemonProxy
 
 # allow user to do
@@ -9,5 +9,5 @@ __all__ = [
     'main',
     # symbols
     'ObjectDaemonProxy',  # legacy name of DaemonProxy, to remove
-    'DaemonProxy', 'InstanceDefinition', 'ScriptDefinition'
+    'DaemonProxy', 'InstanceDefinition', 'ScriptDefinition', 'ModuleDefinition'
 ]
