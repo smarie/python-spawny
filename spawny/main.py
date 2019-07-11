@@ -10,6 +10,9 @@ from six import with_metaclass, raise_from
 
 try: # python 3.5+
     from typing import Union, Any, List, Dict, Tuple, Type, Iterable, Callable
+except SyntaxError:
+    # strange error on some python 3.7 distributions ?!!
+    pass
 except ImportError:
     pass
 

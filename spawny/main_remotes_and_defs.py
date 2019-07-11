@@ -5,11 +5,6 @@ from types import ModuleType
 
 from six import with_metaclass
 
-try:  # python 3.5+
-    from typing import Optional
-except ImportError:
-    pass
-
 try: # python 3.5+
     from importlib import util as import_util
 
@@ -44,7 +39,7 @@ class InstanceDefinition(Definition):
     """
 
     def __init__(self,
-                 module_name,  # type: Optional[str]
+                 module_name,  # type: str
                  clazz_name,   # type: str
                  *args,
                  **kwargs
