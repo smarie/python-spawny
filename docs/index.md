@@ -1,50 +1,80 @@
-# python-object-as-daemon (pyoad)
+# spawny
 
-[![Build Status](https://travis-ci.org/smarie/python-object-as-daemon.svg?branch=master)](https://travis-ci.org/smarie/python-object-as-daemon) [![Tests Status](https://smarie.github.io/python-object-as-daemon/junit/junit-badge.svg?dummy=8484744)](https://smarie.github.io/python-object-as-daemon/junit/report.html) [![codecov](https://codecov.io/gh/smarie/python-object-as-daemon/branch/master/graph/badge.svg)](https://codecov.io/gh/smarie/python-object-as-daemon) [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://smarie.github.io/python-object-as-daemon/) [![PyPI](https://img.shields.io/badge/PyPI-pyoad-blue.svg)](https://pypi.python.org/pypi/pyoad/)
+*Spawn python code in a separate python interpreter and communicate with it easily.*
 
-Tiny utility to spawn an object in a separate process, possibly using another python executable/environment. The object may be accessed from the main process through a proxy with similar behaviour. This project relies on the default multiprocessing module, therefore:
+[![Python versions](https://img.shields.io/pypi/pyversions/getversion.svg)](https://pypi.python.org/pypi/getversion/) [![Build Status](https://travis-ci.org/smarie/python-spawny.svg?branch=master)](https://travis-ci.org/smarie/python-spawny) [![Tests Status](https://smarie.github.io/python-spawny/junit/junit-badge.svg?dummy=8484744)](https://smarie.github.io/python-spawny/junit/report.html) [![codecov](https://codecov.io/gh/smarie/python-spawny/branch/master/graph/badge.svg)](https://codecov.io/gh/smarie/python-spawny)
 
-* the child environment does not require any particular package to be present (not even this package). It makes it quite convenient to launch tasks/tests on specific environments.
-* communication between processes is done using multiprocessing Pipes
+[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-spawny/) [![PyPI](https://img.shields.io/pypi/v/spawny.svg)](https://pypi.python.org/pypi/spawny/) [![Downloads](https://pepy.tech/badge/spawny)](https://pepy.tech/project/spawny) [![Downloads per week](https://pepy.tech/badge/spawny/week)](https://pepy.tech/project/spawny) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-spawny.svg)](https://github.com/smarie/python-spawny/stargazers)
+
+!!! success "New: entire scripts can now be run remotely, [check it out](#executing-a-script) !"
+
+Do you want to run python code in a separate process, in a separate python interpreter, while still being able to communicate with it easily ? `spawny` was made for this. 
+
+It relies on the built-in [`multiprocessing`](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing) module, but provides a higher-level API so that it is **extremely easy for a non-expert** to get started. The child python environment does not require any particular package to be present (not even the `spawny` package). The subprocess may be accessed from the main process through a **"proxy" python object**. Simply call that object, this will use a multiprocessing `Pipe` behind the scenes.
 
 ## Installing
 
 ```bash
-> pip install pyoad
+> pip install spawny
 ```
 
-## Basic Usage
+## Usage
 
-### Creating
+### Executing a script
 
-Let us create a string instance and send it into a daemon:
+Let's write some python code and put it in a variable:
 
 ```python
-from pyoad import ObjectDaemonProxy
-daemon_str = ObjectDaemonProxy('hello, world!')
+script = """
+from collections import OrderedDict
+
+odct = OrderedDict()
+odct['a'] = 1
+
+foo = "hello world"
+
+def say_hello(who):
+    return "hello %s" % who
+
+print(say_hello("process"))    
+"""
 ```
 
-The outcome is :
-
-```bash
-[15756] Object daemon started in : C:\Anaconda3\envs\tools\python.exe
-```
-
-Note that the spawned process id is printed, for reference (here, `[15756]`). You can check in your OS process manager that there is a new python process running under this pid.
-
-
-### Calling
- 
-You may now interact with the proxy as if the object were still local:
+To execute this script in a subprocess, all you have to do is call `run_script`:
 
 ```python
-print(daemon_str)
-print(daemon_str[0:5])
+from spawny import run_script
+
+# execute the script in another process
+daemon_module = run_script(script)
 ```
 
+It yields:
+
 ```bash
-hello, world!
-hello
+[DaemonProxy] spawning child process...
+[11100] Daemon started using python interpreter: <path>/python.exe
+hello, process!
+[DaemonProxy] spawning child process... DONE. PID=11100
+```
+
+Now your script is running in a subprocess, with process id `11100` as indicated in the printed message.  You can check in your OS process manager that there is a new python process running under this pid. What happened behind the scenes is that the subprocess spawned loaded your script in a dynamically created module. You can see that module was ent with the `hello, process!` print that comes from the end of the script.
+
+
+The `daemon_module` variable now contains a proxy able to communicate with it through inter-process communication (`multiprocessing.Pipe`). So you can access all the variables created in your script, and each variable will contain a proxy to the respective object. You can interact with each variable as it the objects were here:
+
+```python
+# interact with it:
+print(daemon_module.odct)
+assert daemon_module.foo == "hello world"
+assert daemon_module.say_hello("earthling") == "hello earthling"
+```
+
+Note that the results of interacting with these variables are then received as plain python object, not as proxy. Only the main variable (`daemon_module`) and the first-level variables (`daemon_module.odct`, etc.) are proxies. You can check it with:
+
+```python
+print(type(daemon_module.foo))                     # ObjectProxy
+print(type(daemon_module.say_hello("earthling")))  # str
 ```
 
 ### Disposing
@@ -52,7 +82,7 @@ hello
 If you dispose of the object by releasing any reference to it, the daemon process will automatically terminate the next time the python garbage collector runs:
 
 ```python
-daemon_str = None
+daemon_module = None
 import gc
 gc.collect()  # explicitly ask for garbage collection right now
 ```
@@ -60,39 +90,50 @@ gc.collect()  # explicitly ask for garbage collection right now
 Displays:
 
 ```bash
-[15756] Object daemon  was asked to exit - closing communication connection
-[15756] Object daemon  terminating
+[11100] Object daemon  was asked to exit - closing communication connection
+[11100] Object daemon  terminating
 ```
 
-## Advanced
-
-### Daemon-side instantiation
-
-In most cases you'll probably want the daemon to instantiate the object, not the main process. For this purpose the `InstanceDefinition` class may be used to describe what you want to instantiate:
+Note that this only happens if there is no remaining object proxy in any of your variable.
+You can reach the same result explicitly, by calling the `.terminate_daemon()` method on any of your object proxies (the main one or the second-level ones):
 
 ```python
-from pyoad import ObjectDaemonProxy, InstanceDefinition
+daemon_module.terminate_daemon()
+```
+
+### Executing a module
+
+Simply use `run_module` instead of `run_script`. You can either provide a module name if the module is already imported, or a name and a path if the module file is not imported in the caller process.
+
+### Executing a single object
+
+For this purpose the `InstanceDefinition` class may be used to describe what you want to instantiate:
+
+```python
+from spawny import InstanceDefinition, run_object
 definition = InstanceDefinition('io', 'StringIO', 'hello, world!')
-daemon_strio = ObjectDaemonProxy(definition)
+daemon_strio = run_object(definition)
 print(daemon_strio.getvalue())
 ```
 
 Note that the module name may be set to `builtins` for built-ins:
 
 ```python
-from pyoad import ObjectDaemonProxy, InstanceDefinition
-daemon_str_int = ObjectDaemonProxy(InstanceDefinition('builtins', 'str', 1))
+from spawny import run_object, InstanceDefinition
+daemon_str_int = run_object(InstanceDefinition('builtins', 'str', 1))
 print(daemon_str_int)
 ```
 
 Note: if the module is set to `None`, the class name is looked for in `globals()`
+
+## Advanced
 
 ### Choice of python executable/environment
 
 You may wish to run the daemon in a given python environment, typically different from the one your main process runs into:
 
 ```python
-daemon = ObjectDaemonProxy(..., python_exe='<path_to_python.exe>')
+daemon = run_xxx(..., python_exe='<path_to_python.exe>')
 ```
 
 
@@ -102,7 +143,7 @@ This is how you change the module default logging level :
 
 ```python
 import logging
-logging.getLogger('pyoad').setLevel(logging.DEBUG)
+logging.getLogger(spawny).setLevel(logging.DEBUG)
 ```
 
 Otherwise you may also wish to provide your own logger:
@@ -112,26 +153,29 @@ from logging import getLogger, FileHandler, INFO
 my_logger = getLogger('mine')
 my_logger.addHandler(FileHandler('hello.log'))
 my_logger.setLevel(INFO)
-daemon = ObjectDaemonProxy(..., logger = my_logger)
+daemon = run_xxx(..., logger = my_logger)
 ```
 
 
 ## See Also
 
-There are many libraries out there that provide much more functionality to distribute objects. The difference with `pyoad` is that they are bigger and typically require something to be installed on the server side. However the gain in features is often incredibly high (distribution over networks, object registries, compliance with other languages...). Check them out ! 
+ * The [`multiprocessing`](https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing) built-in python module.
 
-* [PyRo](https://pythonhosted.org/Pyro4/)
-* [RPyC](https://rpyc.readthedocs.io/en/latest/)
+
+There are many libraries out there that provide much more functionality to distribute objects. The difference with `spawny` is that they are bigger and typically require something to be installed on the server side. However the gain in features is often incredibly high (distribution over networks, object registries, compliance with other languages...). Check them out ! 
+
+ * [PyRo](https://pythonhosted.org/Pyro4/)
+ * [RPyC](https://rpyc.readthedocs.io/en/latest/)
 
 
 Some smaller projects from the community:
 
-* [cluster-func](https://pypi.python.org/pypi/cluster-func)
-* [dproxify](https://pypi.python.org/pypi/dproxify)
+ * [cluster-func](https://pypi.python.org/pypi/cluster-func)
+ * [dproxify](https://pypi.python.org/pypi/dproxify)
 
 
 *Do you like this library ? You might also like [my other python libraries](https://github.com/smarie?utf8=%E2%9C%93&tab=repositories&q=&type=&language=python)* 
 
 ## Want to contribute ?
 
-Details on the github page: [https://github.com/smarie/python-object-as-daemon](https://github.com/smarie/python-classtools-autocode) 
+Details on the github page: [https://github.com/smarie/python-spawny](https://github.com/smarie/python-classtools-autocode) 
