@@ -2,7 +2,7 @@ import sys
 from collections import OrderedDict
 from os.path import join, dirname
 
-from spawner import ScriptDefinition, DaemonProxy, ModuleDefinition
+from spawner import run_script, run_module
 
 
 def test_remote_script():
@@ -17,7 +17,7 @@ odct['a'] = 1
 foo = "hello world"
 """
 
-    remote_script = DaemonProxy(ScriptDefinition(script))
+    remote_script = run_script(script)
 
     try:
         assert remote_script.odct == OrderedDict([('a', 1)])
@@ -35,7 +35,7 @@ def test_remote_module_from_name():
 
     # named import
     sys.path.insert(0, RESOURCES_DIR)
-    remote_script = DaemonProxy(ModuleDefinition(module_name='dummy'))
+    remote_script = run_module(module_name='dummy')
 
     try:
         assert remote_script.odct == OrderedDict([('a', 1)])
@@ -48,7 +48,7 @@ def test_remote_module_from_path():
     """ Simple test with daemon-side instantiation of a io.StringIO """
 
     # path import
-    remote_script = DaemonProxy(ModuleDefinition('dummy2', module_path=join(NOT_IN_PATH_RESOURCES_DIR, 'dummy2.py')))
+    remote_script = run_module('dummy2', module_path=join(NOT_IN_PATH_RESOURCES_DIR, 'dummy2.py'))
 
     try:
         assert remote_script.odct == OrderedDict([('a', 1)])

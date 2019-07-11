@@ -27,6 +27,46 @@ from spawner.utils_object_proxy import ProxifyDunderMeta, replace_all_dundermeth
 #     mp.set_start_method('spawn')
 
 
+def run_script(script_str,            # type: str
+               python_exe=None,       # type: str
+               logger=default_logger  # type: Logger
+               ):
+    # type: (...) -> DaemonProxy
+    """
+    Executes the provided script in a subprocess. The script will be run in a dynamically created module.
+
+    Returns an instance of `DaemonProxy` representing the created module, that will transmit all interactions to the
+    backend module through the created inter-process communication channel.
+
+    :param script_str:
+    :param python_exe:
+    :param logger:
+    :return:
+    """
+    return DaemonProxy(ScriptDefinition(script_str), python_exe=python_exe, logger=logger)
+
+
+def run_module(module_name,           # type: str
+               module_path=None,      # type: str
+               python_exe=None,       # type: str
+               logger=default_logger  # type: Logger
+               ):
+    # type: (...) -> DaemonProxy
+    """
+    Executes the provided module in a subprocess.
+
+    Returns an instance of `DaemonProxy` representing the module, that will transmit all interactions to the
+    backend module through the created inter-process communication channel.
+
+    :param module_name:
+    :param module_path:
+    :param python_exe:
+    :param logger:
+    :return:
+    """
+    return DaemonProxy(ModuleDefinition(module_name, module_path=module_path), python_exe=python_exe, logger=logger)
+
+
 # 'protocol' constants
 OK_FLAG = True
 ERR_FLAG = False
