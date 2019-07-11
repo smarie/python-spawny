@@ -92,6 +92,7 @@ Displays:
 ```bash
 [11100] Object daemon  was asked to exit - closing communication connection
 [11100] Object daemon  terminating
+[DaemonProxy<11100>] Terminated successfully
 ```
 
 Note that this only happens if there is no remaining object proxy in any of your variable.
