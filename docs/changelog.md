@@ -1,6 +1,6 @@
 # Changelog
 
-### 2.0.0 - Support for scripts, new name: `spawny`, support for python 2.
+### 2.0.1 - Support for scripts, new name: `spawny`, support for python 2.
 
 **General:**
 
