@@ -15,6 +15,11 @@ odct = OrderedDict()
 odct['a'] = 1
 
 foo = "hello world"
+
+def say_hello(who):
+    return "hello, %s!" % who
+
+print(say_hello("process"))    
 """
 
     remote_script = run_script(script)
@@ -22,6 +27,7 @@ foo = "hello world"
     try:
         assert remote_script.odct == OrderedDict([('a', 1)])
         assert remote_script.foo == "hello world"
+        assert remote_script.say_hello("earthling") == "hello, earthling!"
     finally:
         remote_script.terminate_daemon()
 
@@ -40,6 +46,7 @@ def test_remote_module_from_name():
     try:
         assert remote_script.odct == OrderedDict([('a', 1)])
         assert remote_script.foo == "hello world"
+        assert remote_script.say_hello("earthling") == "hello, earthling!"
     finally:
         remote_script.terminate_daemon()
 
@@ -53,5 +60,6 @@ def test_remote_module_from_path():
     try:
         assert remote_script.odct == OrderedDict([('a', 1)])
         assert remote_script.foo == "hello world"
+        assert remote_script.say_hello("earthling") == "hello, earthling!"
     finally:
         remote_script.terminate_daemon()

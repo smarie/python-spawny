@@ -11,7 +11,7 @@ except ImportError:
 import psutil
 import pytest
 
-from spawner import DaemonProxy, InstanceDefinition  # init_mp_context
+from spawner import DaemonProxy, InstanceDefinition
 
 THIS_DIR = path.dirname(path.abspath(__file__))
 
