@@ -42,7 +42,7 @@ def pytest_html_results_table_row(report, cells):
 
     try:
         hsh = get_git_hash()
-        cells[-1] = html.td(html.a('source', href='https://codecov.io/gh/smarie/python-spawner/src/' + hsh
+        cells[-1] = html.td(html.a('source', href='https://codecov.io/gh/smarie/python-spawny/src/' + hsh
                                                   + '/' + file + '#L' + str(line)))
     except:
         cells[-1] = html.td('could not read git version')

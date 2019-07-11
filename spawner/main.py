@@ -14,9 +14,9 @@ try: # python 3.5+
 except ImportError:
     pass
 
-from spawner.main_remotes_and_defs import InstanceDefinition, ScriptDefinition, ModuleDefinition
-from spawner.utils_logging import default_logger
-from spawner.utils_object_proxy import ProxifyDunderMeta, replace_all_dundermethods_with_getattr
+from spawny.main_remotes_and_defs import InstanceDefinition, ScriptDefinition, ModuleDefinition
+from spawny.utils_logging import default_logger
+from spawny.utils_object_proxy import ProxifyDunderMeta, replace_all_dundermethods_with_getattr
 
 
 # def init_mp_context():
@@ -292,7 +292,7 @@ def daemon(conn,
     # TODO (even local import) does not work
     # import sys
     # from logging import getLogger, StreamHandler
-    # _daemon_logger = getLogger('spawner-daemon')
+    # _daemon_logger = getLogger('spawny-daemon')
     # ch = StreamHandler(sys.stdout)
     # _daemon_logger.addHandler(ch)
 

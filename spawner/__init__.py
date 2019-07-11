@@ -1,8 +1,8 @@
-from spawner.main_remotes_and_defs import ScriptDefinition, InstanceDefinition, ModuleDefinition
-from spawner.main import ObjectDaemonProxy, DaemonProxy, run_script, run_module
+from spawny.main_remotes_and_defs import ScriptDefinition, InstanceDefinition, ModuleDefinition
+from spawny.main import ObjectDaemonProxy, DaemonProxy, run_script, run_module
 
 # allow user to do
-#    import spawner as a
+#    import spawny as a
 # and then use a.xxx directly (without the intermediate package name)
 __all__ = [
     # submodules

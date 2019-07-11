@@ -96,7 +96,7 @@ class ScriptDefinition(object):
         :return:
         """
         # find a suitable name
-        name = '<spawner-remote-module-%s>'
+        name = '<spawny-remote-module-%s>'
         i = 0
         while (name % i) in globals():
             i += 1

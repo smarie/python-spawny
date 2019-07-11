@@ -2,7 +2,7 @@ import sys
 from collections import OrderedDict
 from os.path import join, dirname
 
-from spawner import run_script, run_module
+from spawny import run_script, run_module
 
 
 def test_remote_script():

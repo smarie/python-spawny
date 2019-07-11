@@ -1,25 +1,25 @@
-# spawner
+# spawny
 
 *Spawn python code in a separate python interpreter and communicate with it easily.*
 
-[![Python versions](https://img.shields.io/pypi/pyversions/spawner.svg)](https://pypi.python.org/pypi/spawner/) [![Build Status](https://travis-ci.org/smarie/python-spawner.svg?branch=master)](https://travis-ci.org/smarie/python-spawner) [![Tests Status](https://smarie.github.io/python-spawner/junit/junit-badge.svg?dummy=8484744)](https://smarie.github.io/python-spawner/junit/report.html) [![codecov](https://codecov.io/gh/smarie/python-spawner/branch/master/graph/badge.svg)](https://codecov.io/gh/smarie/python-spawner)
+[![Python versions](https://img.shields.io/pypi/pyversions/spawny.svg)](https://pypi.python.org/pypi/spawny/) [![Build Status](https://travis-ci.org/smarie/python-spawny.svg?branch=master)](https://travis-ci.org/smarie/python-spawny) [![Tests Status](https://smarie.github.io/python-spawny/junit/junit-badge.svg?dummy=8484744)](https://smarie.github.io/python-spawny/junit/report.html) [![codecov](https://codecov.io/gh/smarie/python-spawny/branch/master/graph/badge.svg)](https://codecov.io/gh/smarie/python-spawny)
 
-[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-spawner/) [![PyPI](https://img.shields.io/pypi/v/spawner.svg)](https://pypi.python.org/pypi/spawner/) [![Downloads](https://pepy.tech/badge/spawner)](https://pepy.tech/project/spawner) [![Downloads per week](https://pepy.tech/badge/spawner/week)](https://pepy.tech/project/spawner) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-spawner.svg)](https://github.com/smarie/python-spawner/stargazers)
+[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://smarie.github.io/python-spawny/) [![PyPI](https://img.shields.io/pypi/v/spawny.svg)](https://pypi.python.org/pypi/spawny/) [![Downloads](https://pepy.tech/badge/spawny)](https://pepy.tech/project/spawny) [![Downloads per week](https://pepy.tech/badge/spawny/week)](https://pepy.tech/project/spawny) [![GitHub stars](https://img.shields.io/github/stars/smarie/python-spawny.svg)](https://github.com/smarie/python-spawny/stargazers)
 
-**This is the readme for developers.** The documentation for users is available here: [https://smarie.github.io/python-spawner/](https://smarie.github.io/python-spawner/)
+**This is the readme for developers.** The documentation for users is available here: [https://smarie.github.io/python-spawny/](https://smarie.github.io/python-spawny/)
 
 ## Want to contribute ?
 
 Contributions are welcome ! Simply fork this project on github, commit your contributions, and create pull requests.
 
-Here is a non-exhaustive list of interesting open topics: [https://github.com/smarie/python-spawner/issues](https://github.com/smarie/python-spawner/issues)
+Here is a non-exhaustive list of interesting open topics: [https://github.com/smarie/python-spawny/issues](https://github.com/smarie/python-spawny/issues)
 
 ## Running the tests
 
 This project uses `pytest`.
 
 ```bash
-pytest -v spawner/tests/
+pytest -v spawny/tests/
 ```
 
 You may need to install requirements for setup beforehand, using 
@@ -61,7 +61,7 @@ pip install -r ci_tools/requirements-doc.txt
 The following commands generate the html test report and the associated badge. 
 
 ```bash
-pytest --junitxml=junit.xml -v spawner/tests/
+pytest --junitxml=junit.xml -v spawny/tests/
 ant -f ci_tools/generate-junit-html.xml
 python ci_tools/generate-junit-badge.py
 ```

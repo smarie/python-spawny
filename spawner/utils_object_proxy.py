@@ -1,7 +1,7 @@
 from logging import Logger
 from types import MethodType
 
-from spawner.utils_logging import default_logger
+from spawny.utils_logging import default_logger
 
 
 def replace_all_dundermethods_with_getattr(ignore,

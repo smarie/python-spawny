@@ -24,11 +24,11 @@ except Exception as e:
     raise_from(Exception('Required packages for setup not found. Please install `setuptools_scm`'), e)
 
 # ************** ID card *****************
-DISTNAME = 'spawner'
+DISTNAME = 'spawny'
 DESCRIPTION = 'Spawns a pythyon script as a daemon in another process, possibly using another python executable/environment'
 MAINTAINER = 'Sylvain MARIE'
 MAINTAINER_EMAIL = 'sylvain.marie@se.com'
-URL = 'https://github.com/smarie/python-spawner'
+URL = 'https://github.com/smarie/python-spawny'
 LICENSE = 'BSD 3-Clause'
 LICENSE_LONG = 'License :: OSI Approved :: BSD License'
 
