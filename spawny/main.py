@@ -3,18 +3,17 @@ import os
 from logging import Logger
 
 import sys
+from pickle import PicklingError
+from types import FunctionType
 
 from six import with_metaclass
 
 try: # python 3.5+
-    from typing import Union, Any, List, Dict, Tuple
-
-    # type definition for the payload - fancy :)
-    CmdPayload = Tuple[str, List, Dict]
+    from typing import Union, Any, List, Dict, Tuple, Type, Iterable, Callable
 except ImportError:
     pass
 
-from spawny.main_remotes_and_defs import InstanceDefinition, ScriptDefinition, ModuleDefinition
+from spawny.main_remotes_and_defs import InstanceDefinition, ScriptDefinition, ModuleDefinition, Definition
 from spawny.utils_logging import default_logger
 from spawny.utils_object_proxy import ProxifyDunderMeta, replace_all_dundermethods_with_getattr
 
@@ -31,7 +30,7 @@ def run_script(script_str,            # type: str
                python_exe=None,       # type: str
                logger=default_logger  # type: Logger
                ):
-    # type: (...) -> DaemonProxy
+    # type: (...) -> ObjectProxy
     """
     Executes the provided script in a subprocess. The script will be run in a dynamically created module.
 
@@ -43,7 +42,8 @@ def run_script(script_str,            # type: str
     :param logger:
     :return:
     """
-    return DaemonProxy(ScriptDefinition(script_str), python_exe=python_exe, logger=logger)
+    d = DaemonProxy(ScriptDefinition(script_str), python_exe=python_exe, logger=logger)
+    return d.obj_proxy
 
 
 def run_module(module_name,           # type: str
@@ -51,7 +51,7 @@ def run_module(module_name,           # type: str
                python_exe=None,       # type: str
                logger=default_logger  # type: Logger
                ):
-    # type: (...) -> DaemonProxy
+    # type: (...) -> ObjectProxy
     """
     Executes the provided module in a subprocess.
 
@@ -64,7 +64,18 @@ def run_module(module_name,           # type: str
     :param logger:
     :return:
     """
-    return DaemonProxy(ModuleDefinition(module_name, module_path=module_path), python_exe=python_exe, logger=logger)
+    d = DaemonProxy(ModuleDefinition(module_name, module_path=module_path), python_exe=python_exe, logger=logger)
+    return d.obj_proxy
+
+
+def run_object(
+               object_instance_or_definition,  # type: Union[Any, Definition]
+               python_exe=None,                # type: str
+               logger=default_logger           # type: Logger
+               ):
+    # type: (...) -> ObjectProxy
+    d = DaemonProxy(object_instance_or_definition, python_exe=python_exe, logger=logger)
+    return d.obj_proxy
 
 
 # 'protocol' constants
@@ -72,24 +83,163 @@ OK_FLAG = True
 ERR_FLAG = False
 START_CMD = -1
 EXIT_CMD = 0
-ATTR_OR_METHOD_CMD = 1
-METHOD_CMD = 2
-ATTR_CMD = 3
+EXEC_CMD = 1  # this will send a function to execute
 
 
-class DaemonProxy(with_metaclass(ProxifyDunderMeta, object)):
+# --------- all the functions that will be pickled so as to be remotely executed
+
+def get_object(o,
+               names
+               ):
     """
-    A proxy that spawns (or TODO conects to)
-    a separate process and delegates the methods to it.
+    Command used to get the object o.name1.name2.name3 where name1, name2, name3 are provided in `names`
+    It is located here so that it can be pickled and sent over the wire
 
-    For the trick about redirecting all dunder methods to getattr, see
-    https://stackoverflow.com/questions/9057669/how-can-i-intercept-calls-to-pythons-magic-methods-in-new-style-classes
+    :param o:
+    :param names:
+    :return:
     """
+    result = o
+    for n in names:
+        result = getattr(result, n)
+    return result
 
+
+def is_function(o,
+                names):
+    o = get_object(o, names)
+    if isinstance(o, FunctionType):
+        return True
+    elif hasattr(o, 'im_self'):
+        return True
+    elif hasattr(o, '__self__'):
+        return True
+    else:
+        return False
+
+
+def call_method_on_object(o,
+                          *args,
+                          # names,
+                          **kwargs):
+    names = kwargs.pop('names')
+    return get_object(o, names)(*args, **kwargs)
+
+
+# ---------- end of picklable functions
+
+
+class ObjectProxy(with_metaclass(ProxifyDunderMeta, object)):
+    """
+    Represents a proxy to an object. It relies on a daemon proxy to communicate.
+
+    Thanks to the `ProxifyDunderMeta` metaclass, all dunder methods are redirected to __getattr__. See  https://stackoverflow.com/questions/9057669/how-can-i-intercept-calls-to-pythons-magic-methods-in-new-style-classes
+
+
+    """
     __ignore__ = "class mro new init setattr getattr getattribute dict del dir doc name qualname module"
 
+    __myslots__ = 'daemon', 'is_multi_object', 'child_names'  # 'instance_type',
+
     def __init__(self,
-                 obj_instance_or_definition,  # type: Union[Any, InstanceDefinition, ScriptDefinition]
+                 daemon,              # type: DaemonProxy
+                 is_multi_object,     # type: bool
+                 instance_type=None,  # type: Type[Any]
+                 #attr_methods=None,   # type: List[str]
+                 child_names=None     # type: List[str]
+                 ):
+
+        to_ignore = set("__%s__" % n for n in ObjectProxy.__ignore__.split())
+
+        # replace all methods dynamically: actually this seems to be useless since if we do not do it
+        # at class creation that's not taken into account by python.
+        if instance_type is not None:
+            # if attr_methods is not None:
+            #     raise ValueError("only one of instance_type or attr_methods must be set")
+            replace_all_dundermethods_with_getattr(ignore=to_ignore, from_cls=instance_type, to_cls_or_inst=self,
+                                                   is_class=False)
+        # else:
+        #     if attr_methods is None:
+        #         raise ValueError("one of instance_type or attr_methods must be set")
+        #     replace_all_methods_with_getattr(ignore=to_ignore, from_cls=attr_methods, to_cls_or_inst=self,
+        #                                      is_class=False)
+
+        self.daemon = daemon
+        # self.instance_type = instance_type
+        self.is_multi_object = is_multi_object
+        self.child_names = child_names
+
+    def __getattr__(self, item):
+        if item in ObjectProxy.__myslots__:
+            # real local attributes
+            return super(ObjectProxy, self).__getattribute__(item)
+        elif item in ('terminate_daemon', ):
+            # real daemon attributes
+            return getattr(self.daemon, item)
+        else:
+            # remote communication
+            if self.child_names is not None:
+                names = self.child_names + [item]
+            else:
+                names = [item]
+
+            # first let's check what kind of object this is so that we can determine what to do
+            is_func = self.daemon.remote_call_using_pipe(EXEC_CMD, is_function, names=names)
+            if is_func:
+                # a function (not a callable object ): generate a remote method proxy with that name
+                def remote_method_proxy(*args, **kwargs):
+                    return self.daemon.remote_call_using_pipe(EXEC_CMD, call_method_on_object,
+                                                              to_execute_args=args, names=names, **kwargs)
+
+                return remote_method_proxy
+
+            else:
+                # an object
+                try:
+                    typ = self.daemon.remote_call_using_pipe(EXEC_CMD, get_object, names=names + ['__class__'],
+                                                             ignore_errors=True)
+
+                    if self.is_multi_object:
+                        # create a new DaemonProxy for that object
+                        return ObjectProxy(self.daemon, instance_type=typ, is_multi_object=False, child_names=names)
+                    else:
+                        # bring back the attribute value over the pipe
+                        return self.daemon.remote_call_using_pipe(EXEC_CMD, get_object, names=names)
+
+                except PicklingError as pe:
+                    # the object type is not known or cant be decoded locally.
+                    # TODO get the list of methods ?
+                    return ObjectProxy(self.daemon, instance_type=None, is_multi_object=False, child_names=names)
+
+    # TODO
+    # def __setattr__(self, key, value):
+    #     if not self.is_started():
+    #         return super(DaemonProxy, self).__setattr__(key, value)
+    #     else:
+    #         return setattr(self.obj_proxy, key, value)
+
+    def __call__(self, *args, **kwargs):
+        return self.daemon.remote_call_using_pipe(EXEC_CMD, call_method_on_object, names=self.child_names,
+                                                  to_execute_args=args, **kwargs)
+
+
+class CommChannel(object):
+    __slots__ = 'conn',
+
+    def __init__(self, conn):
+        self.conn = conn
+
+    def __del__(self):
+        self.conn = None
+
+
+class DaemonProxy(object):
+    """
+    A proxy that spawns (or TODO conects to)
+    a separate process and delegates the methods to it, through an `ObjectProxy`.
+    """
+    def __init__(self,
+                 obj_instance_or_definition,  # type: Union[Any, Definition]
                  python_exe=None,             # type: str
                  logger=default_logger        # type: Logger
                  ):
@@ -112,20 +262,26 @@ class DaemonProxy(with_metaclass(ProxifyDunderMeta, object)):
         # --proxify all dunder methods from the instance type
         # unfortunately this does not help much since for new-style classes, special methods are only looked up on the
         # class not the instance. That's why we try to register as much special methods as possible in ProxifyDunderMeta
-        instance_type = obj_instance_or_definition.get_type() \
-            if isinstance(obj_instance_or_definition, InstanceDefinition) else type(obj_instance_or_definition)
-        replace_all_dundermethods_with_getattr(set("__%s__" % n for n in DaemonProxy.__ignore__.split()),
-                                               instance_type, self, is_class=False)
+        if isinstance(obj_instance_or_definition, Definition):
+            instance_type = obj_instance_or_definition.get_type()
+            is_multi_object = obj_instance_or_definition.is_multi_object()
+        else:
+            instance_type = obj_instance_or_definition.__class__
+            is_multi_object = False
+
+        self.obj_proxy = ObjectProxy(daemon=self, instance_type=instance_type, is_multi_object=is_multi_object)
 
         # --set executable (actually there is no way to ensure that this is atomic with mp.Process(), too bad !
         if python_exe is not None:
             if sys.version_info < (3, 0) and not sys.platform.startswith('win'):
                 raise ValueError("`python_exe` can only be set on windows under python 2. See "
                                  "https://docs.python.org/2/library/multiprocessing.html#multiprocessing.")
-            mp.set_executable(python_exe)
+            else:
+                mp.set_executable(python_exe)
 
         # --init the multiprocess communication queue/pipe
-        self.parent_conn, child_conn = mp.Pipe()
+        parent_conn, child_conn = mp.Pipe()
+        self.parent_conn = CommChannel(parent_conn)
         # self.logger.info('Object proxy created an interprocess communication channel')
 
         # --spawn an independent process
@@ -134,7 +290,7 @@ class DaemonProxy(with_metaclass(ProxifyDunderMeta, object)):
                             name=python_exe or 'python' + '-' + str(obj_instance_or_definition))
         self.p.start()
         # make sure that instantiation happened correctly, and report possible exception otherwise
-        self.wait_for_response(START_CMD)
+        self.wait_for_response()
         self.logger.info('[DaemonProxy] spawning child process... DONE. PID=%s' % (self.p.pid))
         self.started = True
 
@@ -150,86 +306,59 @@ class DaemonProxy(with_metaclass(ProxifyDunderMeta, object)):
         else:
             return 'DaemonProxy<%s>' % self.p.pid
 
-    def __getattr__(self, name):
-        """
-        Dynamic proxy
-
-        :param name:
-        :return:
-        """
-        if not self.is_started():
-            return super(object, self).__getattr__(name)
-        else:
-            attr_typ = self.remote_call_using_pipe(ATTR_OR_METHOD_CMD, name)
-
-            if attr_typ == ATTR_CMD:
-                return self.remote_call_using_pipe(ATTR_CMD, name)
-
-            elif attr_typ == METHOD_CMD:
-                # generate a remote method proxy with that name
-                def remote_method_proxy(*args, **kwargs):
-                    return self.remote_call_using_pipe(METHOD_CMD, name, *args, **kwargs)
-                return remote_method_proxy
-
     def remote_call_using_pipe(self,
-                               cmd_type,                # type: int
-                               meth_or_attr_name=None,  # type: str
-                               *args,
-                               **kwargs
+                               cmd_type,                 # type: int
+                               to_execute=None,          # type: Callable[[Any], Any]
+                               to_execute_args=None,     # type: Iterable[Any]
+                               ignore_errors=False,      # type: bool
+                               **to_execute_kwargs       # type: Dict[str, Any]
                                ):
         """
         Calls a remote method
 
-        :param cmd_type: command type (EXIT_CMD, METHOD_CMD, ATTR_CMD)
-        :param meth_or_attr_name:
-        :param args:
-        :param kwargs:
+        Unfortunately there is no easy and portable way to transmit lambda functions over the wire so
+        - to execute should be defined at the module level here
+        - and what will be executed remotely is to_execute(o, **to_execute_kwargs)
+
+        :param cmd_type: command type (EXIT_CMD, EXEC_CMD)
+        :param to_execute:
         :return:
         """
         if not self.is_started():
             raise Exception('[%s] Cannot perform remote calls - daemon is not started' % self)
 
-        if cmd_type == METHOD_CMD:
+        if cmd_type == EXEC_CMD:
             log_str = 'execute method'
-        elif cmd_type == ATTR_CMD:
-            log_str = 'access attribute'
         elif cmd_type == EXIT_CMD:
             log_str = 'exit'
-        elif cmd_type == ATTR_OR_METHOD_CMD:
-            log_str = 'check if this is a method or an attribute'
         else:
             raise ValueError('[%s] Invalid command : %s' % (self, cmd_type))
 
-        query_str = log_str + ((': ' + meth_or_attr_name) if meth_or_attr_name is not None else '')
+        query_str = log_str + ((': %s(o, *%s, **%s)' % (to_execute.__name__, to_execute_args, to_execute_kwargs))
+                               if to_execute is not None else '')
         self.logger.debug('[%s] asking daemon to %s' % (self, query_str))
-        self.parent_conn.send((cmd_type, meth_or_attr_name, args, kwargs))
+        self.parent_conn.conn.send((cmd_type, to_execute, to_execute_args, to_execute_kwargs))
 
         if cmd_type == EXIT_CMD:
             return
         else:
             # wait for the results of the python method called
-            return self.wait_for_response(cmd_type, meth_or_attr_name)
+            return self.wait_for_response(log_errors=not ignore_errors)
 
-    def wait_for_response(self, cmd_type, meth_or_attr_name=None):
+    def wait_for_response(self,
+                          log_errors=True):
         """
-        Waits for a response from chil process
+        Waits for a response from child process
 
-        :param cmd_type:
-        :param meth_or_attr_name:
         :return:
         """
-        res = self.parent_conn.recv()
+        res = self.parent_conn.conn.recv()
         if res[0] == OK_FLAG:
-            if cmd_type == ATTR_OR_METHOD_CMD:
-                str_to_log = meth_or_attr_name \
-                             + (' is a method' if res[1] == METHOD_CMD else
-                                ('is an attribute' if res[1] == ATTR_CMD else 'is unknown: ' + str(res[1])))
-                self.logger.debug('[%s] Received response from daemon: %s' % (self, str_to_log))
-            else:
-                self.logger.debug('[%s] Received response from daemon: %s' % (self, res[1]))
+            self.logger.debug('[%s] Received response from daemon: %s' % (self, res[1]))
             return res[1]
         elif res[0] == ERR_FLAG:
-            self.logger.warning('[%s] Received error from daemon: %s' % (self, res[1]))
+            if log_errors:
+                self.logger.warning('[%s] Received error from daemon: %s' % (self, res[1]))
             raise res[1]
         else:
             raise Exception('[%s] Unknown response flag received: %s. Response body is %s' % (self, res[0], res[1]))
@@ -323,93 +452,126 @@ def daemon(conn,
         # --while there are incoming messages in the pipe, handle them
         while True:
             # retrieve next message (blocks until there is one)
-            cmd_type, method_or_attr_name, method_args_list, method_kwargs_dct = conn.recv()
+            cmd_type, to_execute, to_execute_args, to_execute_kwargs = conn.recv()
             if cmd_type == EXIT_CMD:
                 print(print_prefix + '  was asked to exit - closing communication connection')
                 conn.close()
                 break
             else:
-                exec_cmd_and_send_results(conn, print_prefix, impl, cmd_type,
-                                          (method_or_attr_name, method_args_list, method_kwargs_dct))
+                try:
+                    if to_execute_args is None:
+                        to_execute_args = ()
+
+                    if to_execute_kwargs is not None:
+                        results = to_execute(impl, *to_execute_args, **to_execute_kwargs)
+                    else:
+                        results = to_execute(impl, *to_execute_args)
+
+                    # return results in communication pipe
+                    conn.send((OK_FLAG, results))
+                except Exception as e:
+                    # return error in communication pipe
+                    conn.send((ERR_FLAG, e))
 
     finally:
         # out of the while loop
         print(print_prefix + '  terminating')
 
 
-def exec_cmd_and_send_results(conn,
-                              print_prefix,   # type: str
-                              impl,           # type: Any
-                              cmd_type,       # type: int
-                              cmd_body        # type: CmdPayload
-                              ):
-    """
-    Executes command of type cmd_type with payload cmd_body on object impl, and returns the results in the connection
-
-    :param conn: the pipe connection (on windows a PipeConnection instance, but behaviour is different on linux)
-    :param print_prefix:
-    :param impl:
-    :param cmd_type:
-    :param cmd_body: the payload of the command to execute
-    :return:
-    """
-    try:
-        results = execute_cmd(print_prefix, impl, cmd_type, *cmd_body)
-
-        # return results in communication pipe
-        conn.send((OK_FLAG, results))
-
-    except Exception as e:
-        # return error in communication pipe
-        conn.send((ERR_FLAG, e))
+# def exec_cmd_and_send_results(conn,
+#                               impl,           # type: Any
+#                               to_execute      # type: Callable[[Any], Any]
+#                               ):
+#     """
+#     Executes command of type cmd_type with payload cmd_body on object impl, and returns the results in the connection
+#
+#     :param conn: the pipe connection (on windows a PipeConnection instance, but behaviour is different on linux)
+#     :param impl:
+#     :param to_execute: the function to execute on the object
+#     :return:
+#     """
+#     try:
+#         results = to_execute(impl)
+#     except Exception as e:
+#         # return error in communication pipe
+#         conn.send((ERR_FLAG, e))
+#     else:
+#         # return results in communication pipe
+#         conn.send((OK_FLAG, results))
 
 
-def execute_cmd(print_prefix,         # type: str
-                impl,                 # type: Any
-                cmd_type,             # type: int
-                method_or_attr_name,  # type: str
-                method_args_list,     # type: List
-                method_kwargs_dict    # type: Dict
-                ):
-    """
-    Executes command of type cmd_type on object impl. The following types of commands are available
-
-     * ATTR_OR_METHOD_CMD: returns ATTR_CMD if the method_or_attr_name is a field of impl, or METHOD_CMD if it is a
-       method of impl
-     * ATTR_CMD: returns the value of field method_or_attr_name on object impl
-     * METHOD_CMD: executed method method_or_attr_name on object impl, with arguments *method_args_list and
-       **method_kwargs_dict
-
-    :param print_prefix: the prefix to use in print messages
-    :param impl: the object on which to execute the commands
-    :param cmd_type: the type of command, in ATTR_OR_METHOD_CMD, METHOD_CMD, ATTR_CMD
-    :param method_or_attr_name: the name of the method (METHOD_CMD) or attribute (ATTR_CMD), or both
-    (ATTR_OR_METHOD_CMD)
-    :param method_args_list: positional arguments for the method (METHOD_CMD only)
-    :param method_kwargs_dict: keyword arguments for the method (METHOD_CMD only)
-    :return:
-    """
-
-    if cmd_type == ATTR_OR_METHOD_CMD:
-        # _daemon_logger.debug(print_prefix + ' was asked to check if this is a method or an attribute: ' + name)
-
-        # check if this is a field or a method of impl
-        if not callable(getattr(impl, method_or_attr_name)):
-            return ATTR_CMD
-        else:
-            return METHOD_CMD
-
-    elif cmd_type == METHOD_CMD:
-        # _daemon_logger.debug(print_prefix + ' was asked to execute method: ' + method_or_attr_name)
-
-        # execute method on implementation
-        return getattr(impl, method_or_attr_name)(*method_args_list, **method_kwargs_dict)
-
-    elif cmd_type == ATTR_CMD:
-        # _daemon_logger.debug(print_prefix + ' was asked for attribute: ' + method_or_attr_name)
-
-        # return implementation's field value
-        return getattr(impl, method_or_attr_name)
-
-    else:
-        print(print_prefix + ' received unknown command : %s. Ignoring...' % cmd_type)
+# def execute_cmd(print_prefix,          # type: str
+#                 impl,                  # type: Any
+#                 cmd_type,              # type: int
+#                 method_or_attr_names,  # type: List[Reference]
+#                 method_args_list,      # type: List
+#                 method_kwargs_dict     # type: Dict
+#                 ):
+#     """
+#     Executes command of type cmd_type on object impl. The following types of commands are available
+#
+#      * ATTR_OR_METHOD_CMD: returns ATTR_CMD if the method_or_attr_name is a field of impl, or METHOD_CMD if it is a
+#        method of impl
+#      * ATTR_CMD: returns the value of field method_or_attr_name on object impl
+#      * METHOD_CMD: executed method method_or_attr_name on object impl, with arguments *method_args_list and
+#        **method_kwargs_dict
+#
+#     :param print_prefix: the prefix to use in print messages
+#     :param impl: the object on which to execute the commands
+#     :param cmd_type: the type of command, in ATTR_OR_METHOD_CMD, METHOD_CMD, ATTR_CMD
+#     :param method_or_attr_names: a list containing the qualified name of the method (METHOD_CMD) or attribute
+#         (ATTR_CMD), or both (ATTR_OR_METHOD_CMD)
+#     :param method_args_list: positional arguments for the method (METHOD_CMD only)
+#     :param method_kwargs_dict: keyword arguments for the method (METHOD_CMD only)
+#     :return:
+#     """
+#     method_or_attr = resolve_reference(impl, method_or_attr_names)
+#
+#     if cmd_type == METHOD_CMD:
+#         # _daemon_logger.debug(print_prefix + ' was asked to execute method: ' + method_or_attr_name)
+#
+#         # execute method on implementation
+#         method_args_list = [resolve_reference(impl, a) for a in method_args_list]
+#         return method_or_attr(*method_args_list, **method_kwargs_dict)
+#
+#     elif cmd_type == ATTR_CMD:
+#         # _daemon_logger.debug(print_prefix + ' was asked for attribute: ' + method_or_attr_name)
+#
+#         # return implementation's field value
+#         return method_or_attr
+#
+#     else:
+#         print(print_prefix + ' received unknown command : %s. Ignoring...' % cmd_type)
+#
+#
+# class RemoteReference(object):
+#     __slots__ = 'refs',
+#
+#     def __init__(self, refs):
+#         self.refs = refs
+#
+#     def __str__(self):
+#         return repr(self)
+#
+#     def __repr__(self):
+#         return "Remote Reference %s" % self.refs
+#
+#
+# def resolve_reference(impl,
+#                       any_or_reference  # type: Union[Any, RemoteReference]
+#                       ):
+#     """
+#     If any_or_reference is a reference, resolve it with respect to `impl`.
+#     Otherwise return it as is.
+#
+#     :param impl:
+#     :param any_or_reference:
+#     :return:
+#     """
+#     if isinstance(any_or_reference, RemoteReference):
+#         method_or_attr = impl
+#         for elt in any_or_reference.refs:
+#             method_or_attr = getattr(method_or_attr, elt)
+#         return method_or_attr
+#     else:
+#         return any_or_reference

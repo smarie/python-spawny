@@ -1,12 +1,15 @@
 import sys
 from collections import OrderedDict
 from os.path import join, dirname
+from pickle import PicklingError
 
-from spawny import run_script, run_module
+import pytest
+
+from spawny import run_script, run_module, DaemonProxy, ObjectProxy
 
 
 def test_remote_script():
-    """ Simple test with daemon-side instantiation of a io.StringIO """
+    """ Simple test with a script provided as string """
 
     script = """
 from collections import OrderedDict
@@ -15,19 +18,17 @@ odct = OrderedDict()
 odct['a'] = 1
 
 foo = "hello world"
-
-def say_hello(who):
-    return "hello, %s!" % who
-
-print(say_hello("process"))    
 """
 
     remote_script = run_script(script)
+    assert isinstance(remote_script, ObjectProxy)
 
     try:
+        assert isinstance(remote_script.odct, ObjectProxy)
         assert remote_script.odct == OrderedDict([('a', 1)])
+
+        assert isinstance(remote_script.foo, ObjectProxy)
         assert remote_script.foo == "hello world"
-        assert remote_script.say_hello("earthling") == "hello, earthling!"
     finally:
         remote_script.terminate_daemon()
 
@@ -36,30 +37,50 @@ RESOURCES_DIR = join(dirname(__file__), 'resources')
 NOT_IN_PATH_RESOURCES_DIR = join(RESOURCES_DIR, 'not_in_path')
 
 
-def test_remote_module_from_name():
+@pytest.mark.parametrize("module_in_syspath", [True, False], ids="module_in_syspath={}".format)
+def test_remote_module_from_name(module_in_syspath):
     """ Simple test with daemon-side instantiation of a io.StringIO """
 
-    # named import
-    sys.path.insert(0, RESOURCES_DIR)
-    remote_script = run_module(module_name='dummy')
+    # spawn
+    if module_in_syspath:
+        sys.path.insert(0, RESOURCES_DIR)
+        remote_script = run_module(module_name='dummy')
+    else:
+        remote_script = run_module(module_name='dummy', module_path=join(RESOURCES_DIR, 'dummy.py'))
+
+    # the result is a proxy for the module
+    assert isinstance(remote_script, ObjectProxy)
 
     try:
+        remote_i_proxy = remote_script.i
+        assert isinstance(remote_i_proxy, ObjectProxy)
+        assert remote_i_proxy == 1
+        # remote addition !
+        assert remote_i_proxy + 1 == 2
+        # remote addition AND set !
+        remote_i_proxy += 1
+        assert remote_i_proxy == 2
+
+        assert isinstance(remote_script.odct, ObjectProxy)
         assert remote_script.odct == OrderedDict([('a', 1)])
-        assert remote_script.foo == "hello world"
+
+        assert isinstance(remote_script.foo_str, ObjectProxy)
+        assert remote_script.foo_str == "hello world"
+
+        # assert isinstance(remote_script.say_hello, ObjectProxy) -> not an ObjectProxy, a method proxy
         assert remote_script.say_hello("earthling") == "hello, earthling!"
+
+        assert isinstance(remote_script.foo, ObjectProxy)
+        assert isinstance(remote_script.Foo, ObjectProxy)
+        assert remote_script.foo.say_hello('mister') == '[Foo-1] hello, mister!'
+
+        if module_in_syspath:
+            assert remote_script.Foo(1) == remote_script.foo
+        else:
+            with pytest.raises(PicklingError):
+                remote_script.Foo(1)
+
     finally:
-        remote_script.terminate_daemon()
-
-
-def test_remote_module_from_path():
-    """ Simple test with daemon-side instantiation of a io.StringIO """
-
-    # path import
-    remote_script = run_module('dummy2', module_path=join(NOT_IN_PATH_RESOURCES_DIR, 'dummy2.py'))
-
-    try:
-        assert remote_script.odct == OrderedDict([('a', 1)])
-        assert remote_script.foo == "hello world"
-        assert remote_script.say_hello("earthling") == "hello, earthling!"
-    finally:
+        if module_in_syspath:
+            sys.path.pop(0)
         remote_script.terminate_daemon()

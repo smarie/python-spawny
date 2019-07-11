@@ -11,7 +11,7 @@ except ImportError:
 import psutil
 import pytest
 
-from spawny import DaemonProxy, InstanceDefinition
+from spawny import InstanceDefinition, run_object
 
 THIS_DIR = path.dirname(path.abspath(__file__))
 
@@ -25,7 +25,7 @@ THIS_DIR = path.dirname(path.abspath(__file__))
 
 def test_mini_instance_def():
     """ Simple test with daemon-side instantiation of a io.StringIO """
-    daemon_strio = DaemonProxy(InstanceDefinition(StringIO.__module__, 'StringIO', 'hello, world!'))
+    daemon_strio = run_object(InstanceDefinition(StringIO.__module__, 'StringIO', 'hello, world!'))
     try:
         print(daemon_strio.getvalue())
     finally:
@@ -34,7 +34,7 @@ def test_mini_instance_def():
 
 def test_mini_instance_def_primitives():
     """ Simple test with daemon-side instantiation of a primitive (a str) """
-    daemon_str = DaemonProxy(InstanceDefinition('builtins', 'str', 'hello, world!'))
+    daemon_str = run_object(InstanceDefinition('builtins', 'str', 'hello, world!'))
     try:
         print(daemon_str)
     finally:
@@ -43,7 +43,7 @@ def test_mini_instance_def_primitives():
 
 def test_mini_instance():
     """ Simple test with client-side instantiation of a str and transfer to the daemon """
-    daemon_strio = DaemonProxy('hello, world!')
+    daemon_strio = run_object('hello, world!')
     try:
         print(daemon_strio)  # str then repr
         print('Explicit str required: ' + str(daemon_strio))  # str
@@ -72,7 +72,7 @@ def test_main():
 
     # create daemon object
     print('daemon test')
-    o_r = DaemonProxy(InstanceDefinition(StringIO.__module__, 'StringIO', TEST_STR), python_exe=python_exe)
+    o_r = run_object(InstanceDefinition(StringIO.__module__, 'StringIO', TEST_STR), python_exe=python_exe)
     try:
         perform_test_actions(o_r, TEST_STR)
     finally:
@@ -112,7 +112,7 @@ def teardown_module(module):
 
     # you may wish to create this object to check that the termination code works, but warning: in debug mode,
     # the debugger will call its str() method after each step to refresh the 'variables' panel > might lock.
-    # o_r = DaemonProxy('to_terminate')
+    # o_r = run_object('to_terminate')
 
     def on_terminate(proc):
         print("process {} terminated with exit code {}".format(proc, proc.returncode))

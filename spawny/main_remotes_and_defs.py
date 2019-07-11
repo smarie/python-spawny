@@ -1,5 +1,9 @@
+from abc import ABCMeta, abstractmethod
 from imp import new_module
 from importlib import import_module
+from types import ModuleType
+
+from six import with_metaclass
 
 try:  # python 3.5+
     from typing import Optional
@@ -24,7 +28,17 @@ except ImportError:
         return foo
 
 
-class InstanceDefinition(object):
+class Definition(with_metaclass(ABCMeta, object)):
+    @abstractmethod
+    def get_type(self):
+        pass
+
+    @abstractmethod
+    def is_multi_object(self):
+        pass
+
+
+class InstanceDefinition(Definition):
     """
     Represents the definition of an object instance to create.
     """
@@ -78,8 +92,11 @@ class InstanceDefinition(object):
         # instantiate
         return clazz(*self.args, **self.kwargs)
 
+    def is_multi_object(self):
+        return False
 
-class ScriptDefinition(object):
+
+class ScriptDefinition(Definition):
     """
     Represents a script to run remotely
     """
@@ -107,6 +124,11 @@ class ScriptDefinition(object):
         # return RemoteScript(m)
         return m
 
+    def get_type(self):
+        return ModuleType
+
+    def is_multi_object(self):
+        return True
 
 # class RemoteScript(object):
 #     __slots__ = 'module',
@@ -127,7 +149,7 @@ class ScriptDefinition(object):
 #             self.module.item = value
 
 
-class ModuleDefinition(object):
+class ModuleDefinition(Definition):
     """
     Represents a module to run remotely
     """
@@ -155,3 +177,9 @@ class ModuleDefinition(object):
         else:
             m = import_from_source(self.module_name, self.module_path)
         return m
+
+    def get_type(self):
+        return ModuleType
+
+    def is_multi_object(self):
+        return True
