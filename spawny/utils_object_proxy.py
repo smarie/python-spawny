@@ -7,22 +7,30 @@ from spawny.utils_logging import default_logger
 def replace_all_dundermethods_with_getattr(ignore,
                                            from_cls,
                                            to_cls_or_inst,
-                                           is_class,                # type: bool
-                                           logger = default_logger  # type: Logger
+                                           is_class,  # type: bool
+                                           logger=default_logger  # type: Logger
                                            ):
     """
-    For all methods of from_cls replace/add a method on to_cls_or_inst that relies on __getattr__ to be retrieved.
+    Tool to make `to_cls_or_inst` look like `from_cls` by adding all missing dunder methods. All such created methods
+    will redirect all of their calls to `__getattr__`.
+
+    The reason why we have to do this, is because by default python does not redirect "magic" methods to __getattr__.
+    All other methods are automatically redirected so there is no need to add them, apart for the user to see them
+    in the objects' "dir()". TODO shall we do this ?
+
+    For all methods of `from_cls`, replace or add a method on to_cls_or_inst that relies on __getattr__ to be retrieved.
     If is_class is false, to_cls_or_inst is an instance and only the new methods (not already on the class) will be
     replaced
 
-    :param ignore:
-    :param from_cls:
+    :param ignore: a list of names to ignore
+    :param from_cls: the original class from which all not ignored dunder methods should be copied
     :param to_cls_or_inst:
     :param is_class:
     :param logger:
     :return:
     """
     def make_proxy(name):
+        """Create a method redirecting to __getattr__"""
         def proxy(self, *args):
             return self.__getattr__(name)
         return proxy
@@ -48,10 +56,33 @@ def replace_all_dundermethods_with_getattr(ignore,
 
 
 class ProxifyDunderMeta(type):
+    """
+    Metaclass to replace all methods in a class, except
+
+     - the ones declared in cls.__ignore__
+     - and the ones created explicitly on the class (not inherited)
+
+    with a redirection to __getattr__.
+    """
     def __init__(cls, name, bases, dct):
+        """
+        MetaClass constructor
+        :param name:
+        :param bases:
+        :param dct:
+        """
+        # as usual
         type.__init__(cls, name, bases, dct)
+
+        # collect all names of methods should not be replaced
         to_ignore = set("__%s__" % n for n in cls.__ignore__.split())
         to_ignore.update(set(dct.keys()))
-        replace_all_dundermethods_with_getattr(to_ignore, cls, cls, is_class=True)
-        # add everything from dict class so that at least
-        replace_all_dundermethods_with_getattr(to_ignore, dict, cls, is_class=True)
+
+        # replace all methods with proxies. typically the ones inherited from parent (object)
+        replace_all_dundermethods_with_getattr(ignore=to_ignore, from_cls=cls, to_cls_or_inst=cls, is_class=True)
+
+        # add everything from dict class because actually if we do that dynamically (later) that will fail
+        # so we should replace ALL magic methods NOW at class creation time
+        replace_all_dundermethods_with_getattr(ignore=to_ignore, from_cls=dict, to_cls_or_inst=cls, is_class=True)
+        # add the ones from float too for addition, etc.
+        replace_all_dundermethods_with_getattr(ignore=to_ignore, from_cls=float, to_cls_or_inst=cls, is_class=True)
