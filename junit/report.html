@@ -235,7 +235,7 @@ function filter_table(elem) {
 }
 </script>
     <h1>report.html</h1>
-    <p>Report generated on 11-Jul-2019 at 20:12:30 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v1.21.1</p>
+    <p>Report generated on 11-Jul-2019 at 20:22:11 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v1.21.1</p>
     <h2>Environment</h2>
     <table id="environment">
       <tr>
@@ -252,34 +252,37 @@ function filter_table(elem) {
         <td>Linux-4.15.0-1028-gcp-x86_64-with-debian-stretch-sid</td></tr>
       <tr>
         <td>Plugins</td>
-        <td>{&apos;html&apos;: &apos;1.21.1&apos;, &apos;metadata&apos;: &apos;1.8.0&apos;, &apos;cov&apos;: &apos;2.6.0&apos;}</td></tr>
+        <td>{&apos;cov&apos;: &apos;2.6.0&apos;, &apos;metadata&apos;: &apos;1.8.0&apos;, &apos;html&apos;: &apos;1.21.1&apos;}</td></tr>
       <tr>
         <td>Python</td>
         <td>3.5.6</td></tr>
       <tr>
         <td>TRAVIS_BRANCH</td>
-        <td>2.0.2</td></tr>
+        <td>master</td></tr>
       <tr>
         <td>TRAVIS_BUILD_ID</td>
-        <td>557515579</td></tr>
+        <td>557519652</td></tr>
       <tr>
         <td>TRAVIS_BUILD_NUMBER</td>
-        <td>82</td></tr>
+        <td>83</td></tr>
       <tr>
         <td>TRAVIS_COMMIT</td>
-        <td>f9d14d57555bd8da3e7560163e0366055d092bf7</td></tr>
+        <td>f8de2a0690564d997607f7a16822981b3a935f33</td></tr>
       <tr>
         <td>TRAVIS_COMMIT_MESSAGE</td>
-        <td>2.0.2 changelog</td></tr>
+        <td>Minor doc update</td></tr>
+      <tr>
+        <td>TRAVIS_COMMIT_RANGE</td>
+        <td>f9d14d57555b...f8de2a069056</td></tr>
       <tr>
         <td>TRAVIS_EVENT_TYPE</td>
         <td>push</td></tr>
       <tr>
         <td>TRAVIS_JOB_ID</td>
-        <td>557515581</td></tr>
+        <td>557519654</td></tr>
       <tr>
         <td>TRAVIS_JOB_NUMBER</td>
-        <td>82.2</td></tr>
+        <td>83.2</td></tr>
       <tr>
         <td>TRAVIS_OS_NAME</td>
         <td>linux</td></tr>
@@ -291,12 +294,9 @@ function filter_table(elem) {
         <td>smarie/python-spawny</td></tr>
       <tr>
         <td>TRAVIS_SUDO</td>
-        <td>true</td></tr>
-      <tr>
-        <td>TRAVIS_TAG</td>
-        <td>2.0.2</td></tr></table>
+        <td>true</td></tr></table>
     <h2>Summary</h2>
-    <p>7 tests ran in 1.52 seconds. </p>
+    <p>7 tests ran in 1.37 seconds. </p>
     <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">7 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
     <h2>Results</h2>
     <table id="results-table">
@@ -317,12 +317,12 @@ function filter_table(elem) {
           <td>test_mini_instance_def</td>
           <td> Simple test with daemon-side instantiation of a io.StringIO </td>
           <td class="col-duration">0.01</td>
-          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f9d14d57555bd8da3e7560163e0366055d092bf7/spawny/tests/test_main.py#L25">source</a></td></tr>
+          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f8de2a0690564d997607f7a16822981b3a935f33/spawny/tests/test_main.py#L25">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
             <div class="log">------------------------------ Captured log call -------------------------------<br/>main.py                    341 INFO     [DaemonProxy] spawning child process...
-main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5463
-main.py                    447 INFO     [DaemonProxy&lt;5463&gt;] Terminated successfully</div></td></tr></tbody>
+main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5500
+main.py                    447 INFO     [DaemonProxy&lt;5500&gt;] Terminated successfully</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -330,12 +330,12 @@ main.py                    447 INFO     [DaemonProxy&lt;5463&gt;] Terminated suc
           <td>test_mini_instance_def_primitives</td>
           <td> Simple test with daemon-side instantiation of a primitive (a str) </td>
           <td class="col-duration">0.01</td>
-          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f9d14d57555bd8da3e7560163e0366055d092bf7/spawny/tests/test_main.py#L34">source</a></td></tr>
+          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f8de2a0690564d997607f7a16822981b3a935f33/spawny/tests/test_main.py#L34">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
             <div class="log">------------------------------ Captured log call -------------------------------<br/>main.py                    341 INFO     [DaemonProxy] spawning child process...
-main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5465
-main.py                    447 INFO     [DaemonProxy&lt;5465&gt;] Terminated successfully</div></td></tr></tbody>
+main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5502
+main.py                    447 INFO     [DaemonProxy&lt;5502&gt;] Terminated successfully</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -343,26 +343,26 @@ main.py                    447 INFO     [DaemonProxy&lt;5465&gt;] Terminated suc
           <td>test_mini_instance</td>
           <td> Simple test with client-side instantiation of a str and transfer to the daemon </td>
           <td class="col-duration">0.01</td>
-          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f9d14d57555bd8da3e7560163e0366055d092bf7/spawny/tests/test_main.py#L43">source</a></td></tr>
+          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f8de2a0690564d997607f7a16822981b3a935f33/spawny/tests/test_main.py#L43">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
             <div class="log">------------------------------ Captured log call -------------------------------<br/>main.py                    341 INFO     [DaemonProxy] spawning child process...
-main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5467
-main.py                    447 INFO     [DaemonProxy&lt;5467&gt;] Terminated successfully</div></td></tr></tbody>
+main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5504
+main.py                    447 INFO     [DaemonProxy&lt;5504&gt;] Terminated successfully</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <th>spawny/tests/test_main.py</th>
           <td>test_main</td>
           <td> Spawns a io.StringIO daemon in a temporary venv and asserts that it behaves exactly like a local instance </td>
-          <td class="col-duration">1.14</td>
-          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f9d14d57555bd8da3e7560163e0366055d092bf7/spawny/tests/test_main.py#L56">source</a></td></tr>
+          <td class="col-duration">1.05</td>
+          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f8de2a0690564d997607f7a16822981b3a935f33/spawny/tests/test_main.py#L56">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
             <div class="log">------------------------------ Captured log call -------------------------------<br/>main.py                    341 INFO     [DaemonProxy] spawning child process...
-main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5479
-main.py                    414 WARNING  [DaemonProxy&lt;5479&gt;] Received error from daemon: I/O operation on closed file
-main.py                    447 INFO     [DaemonProxy&lt;5479&gt;] Terminated successfully</div></td></tr></tbody>
+main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5516
+main.py                    414 WARNING  [DaemonProxy&lt;5516&gt;] Received error from daemon: I/O operation on closed file
+main.py                    447 INFO     [DaemonProxy&lt;5516&gt;] Terminated successfully</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
@@ -370,36 +370,36 @@ main.py                    447 INFO     [DaemonProxy&lt;5479&gt;] Terminated suc
           <td>test_remote_script</td>
           <td> Simple test with a script provided as string </td>
           <td class="col-duration">0.01</td>
-          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f9d14d57555bd8da3e7560163e0366055d092bf7/spawny/tests/test_new_api.py#L13">source</a></td></tr>
+          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f8de2a0690564d997607f7a16822981b3a935f33/spawny/tests/test_new_api.py#L13">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
             <div class="log">------------------------------ Captured log call -------------------------------<br/>main.py                    341 INFO     [DaemonProxy] spawning child process...
-main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5481
-main.py                    447 INFO     [DaemonProxy&lt;5481&gt;] Terminated successfully</div></td></tr></tbody>
+main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5518
+main.py                    447 INFO     [DaemonProxy&lt;5518&gt;] Terminated successfully</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <th>spawny/tests/test_new_api.py</th>
           <td>test_remote_module_from_name[module_in_syspath=True]</td>
           <td> Simple test with daemon-side instantiation of a io.StringIO </td>
-          <td class="col-duration">0.03</td>
-          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f9d14d57555bd8da3e7560163e0366055d092bf7/spawny/tests/test_new_api.py#L42">source</a></td></tr>
+          <td class="col-duration">0.02</td>
+          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f8de2a0690564d997607f7a16822981b3a935f33/spawny/tests/test_new_api.py#L42">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
             <div class="log">------------------------------ Captured log call -------------------------------<br/>main.py                    341 INFO     [DaemonProxy] spawning child process...
-main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5483
-main.py                    447 INFO     [DaemonProxy&lt;5483&gt;] Terminated successfully</div></td></tr></tbody>
+main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5520
+main.py                    447 INFO     [DaemonProxy&lt;5520&gt;] Terminated successfully</div></td></tr></tbody>
       <tbody class="passed results-table-row">
         <tr>
           <td class="col-result">Passed</td>
           <th>spawny/tests/test_new_api.py</th>
           <td>test_remote_module_from_name[module_in_syspath=False]</td>
           <td> Simple test with daemon-side instantiation of a io.StringIO </td>
-          <td class="col-duration">0.03</td>
-          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f9d14d57555bd8da3e7560163e0366055d092bf7/spawny/tests/test_new_api.py#L42">source</a></td></tr>
+          <td class="col-duration">0.02</td>
+          <td><a href="https://codecov.io/gh/smarie/python-spawny/src/f8de2a0690564d997607f7a16822981b3a935f33/spawny/tests/test_new_api.py#L42">source</a></td></tr>
         <tr>
           <td class="extra" colspan="6">
             <div class="log">------------------------------ Captured log call -------------------------------<br/>main.py                    341 INFO     [DaemonProxy] spawning child process...
-main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5485
-main.py                    414 WARNING  [DaemonProxy&lt;5485&gt;] Received error from daemon: Can&#x27;t pickle &lt;class &#x27;dummy.Foo&#x27;&gt;: it&#x27;s not the same object as dummy.Foo
-main.py                    447 INFO     [DaemonProxy&lt;5485&gt;] Terminated successfully</div></td></tr></tbody></table></body></html>
+main.py                    347 INFO     [DaemonProxy] spawning child process... DONE. PID=5522
+main.py                    414 WARNING  [DaemonProxy&lt;5522&gt;] Received error from daemon: Can&#x27;t pickle &lt;class &#x27;dummy.Foo&#x27;&gt;: it&#x27;s not the same object as dummy.Foo
+main.py                    447 INFO     [DaemonProxy&lt;5522&gt;] Terminated successfully</div></td></tr></tbody></table></body></html>
