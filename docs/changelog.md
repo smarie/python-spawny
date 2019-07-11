@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.0.2 - bugfix
+
+Fixed error with typing module on some 3.7 distributions. Fixed [#13](https://github.com/smarie/python-spawny/issues/13).
+
 ### 2.0.1 - Support for scripts, new name: `spawny`, support for python 2.
 
 **General:**
