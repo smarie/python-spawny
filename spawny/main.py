@@ -6,7 +6,7 @@ import sys
 from pickle import PicklingError
 from types import FunctionType
 
-from six import with_metaclass
+from six import with_metaclass, raise_from
 
 try: # python 3.5+
     from typing import Union, Any, List, Dict, Tuple, Type, Iterable, Callable
@@ -16,6 +16,9 @@ except ImportError:
 from spawny.main_remotes_and_defs import InstanceDefinition, ScriptDefinition, ModuleDefinition, Definition
 from spawny.utils_logging import default_logger
 from spawny.utils_object_proxy import ProxifyDunderMeta, replace_all_dundermethods_with_getattr
+
+
+PY2 = sys.version_info < (3, 0)
 
 
 # def init_mp_context():
@@ -126,6 +129,41 @@ def call_method_on_object(o,
     return get_object(o, names)(*args, **kwargs)
 
 
+def call_method_using_cmp_py2(o,
+                              *args,
+                              # names,
+                              # method_to_replace
+                              **kwargs):
+    """
+    In python 2 some objects (int...) do not implement rich comparison.
+    The problem is that the proxy that we create for them do implement it.
+    So we have to redirect the implementation.
+    See https://portingguide.readthedocs.io/en/latest/comparisons.html#rich-comparisons
+
+    :param o:
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    names = kwargs.pop('names')
+    method_to_replace = kwargs.pop('method_to_replace')
+    cmp_result = get_object(o, names + ['__cmp__'])(*args, **kwargs)
+
+    if method_to_replace == '__eq__':
+        return cmp_result == 0
+    elif method_to_replace == '__ne__':
+        return cmp_result != 0
+    elif method_to_replace == '__lt__':
+        return cmp_result < 0
+    elif method_to_replace == '__le__':
+        return cmp_result <= 0
+    elif method_to_replace == '__gt__':
+        return cmp_result > 0
+    elif method_to_replace == '__ge__':
+        return cmp_result >= 0
+    else:
+        raise ValueError("invalid method: %s" % method_to_replace)
+
 # ---------- end of picklable functions
 
 
@@ -184,7 +222,19 @@ class ObjectProxy(with_metaclass(ProxifyDunderMeta, object)):
                 names = [item]
 
             # first let's check what kind of object this is so that we can determine what to do
-            is_func = self.daemon.remote_call_using_pipe(EXEC_CMD, is_function, names=names)
+            try:
+                is_func = self.daemon.remote_call_using_pipe(EXEC_CMD, is_function, names=names, log_errors=False)
+            except AttributeError as e:
+                # Rich comparison operators might be missing
+                if PY2 and item in ('__eq__', '__ne__', '__lt__', '__le__', '__gt__', '__ge__'):
+                    def remote_method_proxy(*args, **kwargs):
+                        return self.daemon.remote_call_using_pipe(EXEC_CMD, call_method_using_cmp_py2,
+                                                                  to_execute_args=args, names=names[0:-1],
+                                                                  method_to_replace=item, **kwargs)
+                    return remote_method_proxy
+                else:
+                    raise_from(e, e)
+
             if is_func:
                 # a function (not a callable object ): generate a remote method proxy with that name
                 def remote_method_proxy(*args, **kwargs):
@@ -197,7 +247,7 @@ class ObjectProxy(with_metaclass(ProxifyDunderMeta, object)):
                 # an object
                 try:
                     typ = self.daemon.remote_call_using_pipe(EXEC_CMD, get_object, names=names + ['__class__'],
-                                                             ignore_errors=True)
+                                                             log_errors=False)
 
                     if self.is_multi_object:
                         # create a new DaemonProxy for that object
@@ -307,11 +357,11 @@ class DaemonProxy(object):
             return 'DaemonProxy<%s>' % self.p.pid
 
     def remote_call_using_pipe(self,
-                               cmd_type,                 # type: int
-                               to_execute=None,          # type: Callable[[Any], Any]
-                               to_execute_args=None,     # type: Iterable[Any]
-                               ignore_errors=False,      # type: bool
-                               **to_execute_kwargs       # type: Dict[str, Any]
+                               cmd_type,              # type: int
+                               to_execute=None,       # type: Callable[[Any], Any]
+                               to_execute_args=None,  # type: Iterable[Any]
+                               log_errors=True,       # type: bool
+                               **to_execute_kwargs    # type: Dict[str, Any]
                                ):
         """
         Calls a remote method
@@ -343,7 +393,7 @@ class DaemonProxy(object):
             return
         else:
             # wait for the results of the python method called
-            return self.wait_for_response(log_errors=not ignore_errors)
+            return self.wait_for_response(log_errors=log_errors)
 
     def wait_for_response(self,
                           log_errors=True):
