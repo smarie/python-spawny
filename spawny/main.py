@@ -259,10 +259,14 @@ class ObjectProxy(with_metaclass(ProxifyDunderMeta, object)):
                         # bring back the attribute value over the pipe
                         return self.daemon.remote_call_using_pipe(EXEC_CMD, get_object, names=names)
 
-                except PicklingError as pe:
-                    # the object type is not known or cant be decoded locally.
-                    # TODO get the list of methods ?
-                    return ObjectProxy(self.daemon, instance_type=None, is_multi_object=False, child_names=names)
+                except DaemonCouldNotSendMsgError as pe:
+                    if isinstance(pe.exc, PicklingError):
+                        # the object type is not known or cant be decoded locally. Not important, we can still create a
+                        # proxy
+                        # TODO get the list of methods ?
+                        return ObjectProxy(self.daemon, instance_type=None, is_multi_object=False, child_names=names)
+                    else:
+                        raise
 
     # TODO
     # def __setattr__(self, key, value):
@@ -451,6 +455,53 @@ ObjectDaemonProxy = DaemonProxy
 """Old alias"""
 
 
+class UnknownException(Exception):
+    __slots__ = 'info',
+
+    def __init__(self, use_sys=True):
+        if use_sys:
+            self.info = sys.exc_info()[0]
+        else:
+            self.info = "<unknown>"
+
+    def __str__(self):
+        return "Unknown exception happened on the daemon side: %s" % self.info
+
+
+class DaemonCouldNotSendMsgError(Exception):
+    __slots__ = 'flag', 'exc'
+
+    @staticmethod
+    def create_from(flag, contents, exc):
+        if flag is ERR_FLAG:
+            flag = "ERR_FLAG"
+        elif flag is OK_FLAG:
+            flag = "OK_FLAG"
+        else:
+            flag = "%s_FLAG" % flag
+
+        try:
+            contents = str(contents)
+        except:
+            try:
+                contents = repr(contents)
+            except:
+                contents = "<unable to display contents as string>"
+
+        return DaemonCouldNotSendMsgError(flag, contents, exc)
+
+    def __init__(self, flag_str, contents_str, exc):
+        self.flag = flag_str
+        self.contents = contents_str
+        self.exc = exc
+
+    def __str__(self):
+        return "Daemon caught exception while sending a message back to the client. " \
+               "The message was '[%s] %s'. \n" \
+               "The exception caught while sending was: %s: %s" \
+               "" % (self.flag, self.contents, self.exc.__class__.__name__, self.exc)
+
+
 def daemon(conn,
            obj_instance_or_definition,  # type: Union[Any, InstanceDefinition, ScriptDefinition]
            ):
@@ -469,21 +520,20 @@ def daemon(conn,
     InstanceDefinition to be used to instantiate the object locally.
     :return:
     """
-
-    # default logger
-    # TODO (even local import) does not work
-    # import sys
-    # from logging import getLogger, StreamHandler
-    # _daemon_logger = getLogger('spawny-daemon')
-    # ch = StreamHandler(sys.stdout)
-    # _daemon_logger.addHandler(ch)
-
-    pid = str(os.getpid())
-    exe = sys.executable  # str(os.path.abspath(os.path.join(os.__file__, '../..')))
-    print_prefix = '[' + pid + '] Daemon'
-    print(print_prefix + ' started using python interpreter: ' + exe)
-
     try:
+        # default logger
+        # TODO (even local import) does not work
+        # import sys
+        # from logging import getLogger, StreamHandler
+        # _daemon_logger = getLogger('spawny-daemon')
+        # ch = StreamHandler(sys.stdout)
+        # _daemon_logger.addHandler(ch)
+
+        pid = str(os.getpid())
+        exe = sys.executable  # str(os.path.abspath(os.path.join(os.__file__, '../..')))
+        print_prefix = '[' + pid + '] Daemon'
+        print(print_prefix + ' started using python interpreter: ' + exe)
+
         # --init implementation
         if isinstance(obj_instance_or_definition, InstanceDefinition):
             impl = obj_instance_or_definition.instantiate()
@@ -496,11 +546,16 @@ def daemon(conn,
             impl = obj_instance_or_definition
 
     except Exception as e:
-        conn.send((ERR_FLAG, e))
+        # normal exception
+        safe_conn_send(conn, ERR_FLAG, e)
+
+    except:
+        # system exit exception - lets alert the client, still
+        safe_conn_send(conn, ERR_FLAG, UnknownException())
 
     else:
         # declare that we are correctly started
-        conn.send((OK_FLAG, "%s started" % print_prefix))
+        safe_conn_send(conn, OK_FLAG, "%s started" % print_prefix)
 
         # --while there are incoming messages in the pipe, handle them
         while True:
@@ -512,24 +567,53 @@ def daemon(conn,
                 break
             else:
                 try:
+                    # var args defaults
                     if to_execute_args is None:
                         to_execute_args = ()
+                    if to_execute_kwargs is None:
+                        to_execute_kwargs = dict()
 
-                    if to_execute_kwargs is not None:
-                        results = to_execute(impl, *to_execute_args, **to_execute_kwargs)
-                    else:
-                        results = to_execute(impl, *to_execute_args)
+                    # Execute the desired command
+                    results = to_execute(impl, *to_execute_args, **to_execute_kwargs)
 
-                    # return results in communication pipe
-                    conn.send((OK_FLAG, results))
                 except Exception as e:
-                    # return error in communication pipe
-                    conn.send((ERR_FLAG, e))
+                    # Normal exception: return error in communication pipe
+                    safe_conn_send(conn, ERR_FLAG, e)
+
+                except:
+                    # system exit exception - lets alert the client, still
+                    safe_conn_send(conn, ERR_FLAG, UnknownException())
+
+                else:
+                    # success: return results in communication pipe
+                    safe_conn_send(conn, OK_FLAG, results)
 
     finally:
         # out of the while loop
         print(print_prefix + '  terminating')
 
+
+def safe_conn_send(conn, flag, contents):
+    """
+    Sends a message to the connection, and if sending failed, sends a `DaemonCouldNotSendMsgError` over the pipe.
+
+    :param conn:
+    :param flag:
+    :param contents:
+    :return:
+    """
+    try:
+        try:
+            conn.send((flag, contents))
+        except Exception as e1:
+            # there was an error sending the contents, try to send that error
+            conn.send((ERR_FLAG, DaemonCouldNotSendMsgError.create_from(flag, contents, e1)))
+        except:
+            # there was an error sending the contents, try to send that error
+            conn.send((ERR_FLAG, DaemonCouldNotSendMsgError.create_from(flag, contents, UnknownException())))
+    except:
+        # last resort
+        conn.send((ERR_FLAG, DaemonCouldNotSendMsgError.create_from(flag, contents, UnknownException(use_sys=False))))
 
 # def exec_cmd_and_send_results(conn,
 #                               impl,           # type: Any

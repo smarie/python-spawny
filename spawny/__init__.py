@@ -1,5 +1,6 @@
 from spawny.main_remotes_and_defs import ScriptDefinition, InstanceDefinition, ModuleDefinition
-from spawny.main import ObjectProxy, DaemonProxy, run_script, run_module, run_object
+from spawny.main import ObjectProxy, DaemonProxy, run_script, run_module, run_object, DaemonCouldNotSendMsgError, \
+    UnknownException
 
 # allow user to do
 #    import spawny as a
@@ -9,5 +10,6 @@ __all__ = [
     'main',
     # symbols
     'run_script', 'run_module', 'run_object',
-    'ObjectProxy', 'DaemonProxy', 'InstanceDefinition', 'ScriptDefinition', 'ModuleDefinition'
+    'ObjectProxy', 'DaemonProxy', 'InstanceDefinition', 'ScriptDefinition', 'ModuleDefinition',
+    'DaemonCouldNotSendMsgError', 'UnknownException'
 ]

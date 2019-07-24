@@ -5,8 +5,7 @@ from pickle import PicklingError
 
 import pytest
 
-from spawny import run_script, run_module, ObjectProxy
-
+from spawny import run_script, run_module, ObjectProxy, DaemonCouldNotSendMsgError
 
 PY2 = sys.version_info < (3, 0)
 
@@ -34,6 +33,42 @@ foo = "hello world"
         assert remote_script.foo == "hello world"
     finally:
         remote_script.terminate_daemon()
+
+
+@pytest.mark.parametrize("err,init", [(False, False), (True, False), (True, True)])
+def test_remote_script_unpicklable_result(err, init):
+    """ Simple test with a script provided as string raising an unpicklable error"""
+
+    if err:
+        script = """
+def fail_miserably():
+    class MyUnPicklableException(Exception):
+        '''unpicklable because not at root of a module'''
+        pass
+    raise MyUnPicklableException()
+"""
+    else:
+        script = """
+def fail_miserably():
+    class MyUnPicklableResult(object):
+        '''unpicklable because not at root of a module'''
+        pass
+    return MyUnPicklableResult()
+"""
+
+    if init:
+        script = script + "\n\nfail_miserably()\n"
+        with pytest.raises(DaemonCouldNotSendMsgError):
+            run_script(script)
+    else:
+        remote_script = run_script(script)
+        assert isinstance(remote_script, ObjectProxy)
+
+        try:
+            with pytest.raises(DaemonCouldNotSendMsgError):
+                remote_script.fail_miserably()
+        finally:
+            remote_script.terminate_daemon()
 
 
 RESOURCES_DIR = join(dirname(__file__), 'resources')
@@ -80,8 +115,10 @@ def test_remote_module_from_name(module_in_syspath):
         if module_in_syspath or PY2:  # TODO why does it work on python 2 ?!!!
             assert remote_script.Foo(1) == remote_script.foo
         else:
-            with pytest.raises(PicklingError):
+            with pytest.raises(DaemonCouldNotSendMsgError) as exc_info:
                 remote_script.Foo(1)
+
+            assert isinstance(exc_info.value.exc, PicklingError)
 
     finally:
         if module_in_syspath:
