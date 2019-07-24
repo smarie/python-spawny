@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.1.0 - Better protection against exceptions in the daemon
+
+Now exceptions happening on the daemon side always result in a corresponding message being sent to the client, even if the exception itself is not picklable. Fixes [#14](https://github.com/smarie/python-spawny/issues/14).
+
 ### 2.0.2 - bugfix
 
 Fixed error with typing module on some 3.7 distributions. Fixed [#13](https://github.com/smarie/python-spawny/issues/13).
