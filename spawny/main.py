@@ -491,6 +491,7 @@ class DaemonCouldNotSendMsgError(Exception):
         return DaemonCouldNotSendMsgError(flag, contents, exc)
 
     def __init__(self, flag_str, contents_str, exc):
+        super(DaemonCouldNotSendMsgError, self).__init__(flag_str, contents_str, exc)
         self.flag = flag_str
         self.contents = contents_str
         self.exc = exc
