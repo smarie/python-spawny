@@ -13,8 +13,8 @@ here = path.abspath(path.dirname(__file__))
 # *************** Dependencies *********
 INSTALL_REQUIRES = ['future;python_version<"3.2"']
 DEPENDENCY_LINKS = []
-SETUP_REQUIRES = ['pytest-runner','setuptools_scm', 'pypandoc', 'pandoc']
-TESTS_REQUIRE = ['pytest', 'pytest-logging', 'pytest-cov', 'psutil', 'virtualenv;python_version<"3.2"']
+SETUP_REQUIRES = ['pytest-runner','setuptools_scm']
+TESTS_REQUIRE = ['pytest', 'pytest-logging', 'psutil', 'virtualenv;python_version<"3.2"']
 EXTRAS_REQUIRE = {}
 
 # simple check
@@ -37,19 +37,10 @@ DOWNLOAD_URL = URL + '/tarball/' + version_for_download_url
 
 KEYWORDS = 'spawn script object process daemon proxy rpc distribute'
 
-# --Get the long description from the README file
-# with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-#    LONG_DESCRIPTION = f.read()
-try:
-    import pypandoc
-    LONG_DESCRIPTION = pypandoc.convert(path.join(here, 'docs', 'long_description.md'), 'rst').replace('\r', '')
-except(ImportError):
-    from warnings import warn
-    warn('WARNING pypandoc could not be imported - we recommend that you install it in order to package the '
-         'documentation correctly')
-    LONG_DESCRIPTION = open('README.md').read()
+with open(path.join(here, 'docs', 'long_description.md')) as f:
+    LONG_DESCRIPTION = f.read()
 
-# ************* VERSION A **************
+# ************* VERSION **************
 # --Get the Version number from VERSION file, see https://packaging.python.org/single_source_version/ option 4.
 # THIS IS DEPRECATED AS WE NOW USE GIT TO MANAGE VERSION
 # with open(path.join(here, 'VERSION')) as version_file:
@@ -60,6 +51,7 @@ setup(
     name=DISTNAME,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
