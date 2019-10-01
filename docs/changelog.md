@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.1.2 - Added `__version__` attribute
+
+Added `__version__` attribute at package level.
+
 ### 2.1.1 - Fixed issue with python 2
 
 Fixed [#15](https://github.com/smarie/python-spawny/issues/15).
