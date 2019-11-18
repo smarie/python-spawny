@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.1.3 - Added `pyproject.toml`
+
+Added `pyproject.toml`.
+
 ### 2.1.2 - Added `__version__` attribute
 
 Added `__version__` attribute at package level.
