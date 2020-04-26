@@ -1,5 +1,9 @@
 # Changelog
 
+### 2.1.4 - improved packaging
+
+ - packaging improvements: set the "universal wheel" flag to 1, and cleaned up the `setup.py`. In particular removed dependency to `six` for setup and added `py.typed` file, as well as set the `zip_safe` flag to False. Removed tests folder from package. Fixes [#16](https://github.com/smarie/python-spawny/issues/16)
+
 ### 2.1.3 - Added `pyproject.toml`
 
 Added `pyproject.toml`.
